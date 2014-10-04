@@ -325,17 +325,21 @@ def startFile( label, option='WRITE TEXT' ):
 	#This function will default to writing text, but it can be used to write STRINGs,
 	#for example, by calling startFile("1", "WRITE STRING")
 
+    if not option in COMMAND_CODES:
+        #not a valid command
+        return
+
 	if len(branch) == 1 and branch[ len(branch) - 1 ] == "Packet" and lock == 0:
 		packet += COMMAND_CODES[ option ] + FILE_LABELS[label]
-		branch.append( "File" )
+		branch.append( option )
 		lock += 1
 	else:
 		raise PacketLevelException('Method called outside of branch restriction.')
 
 def endFile():
-	global branch
+	global branch, COMMAND
 
-	if len(branch) == 2 and branch[ len(branch) - 1 ] == "File":
+	if len(branch) == 2 and branch[ len(branch) - 1 ] in COMMAND_CODES:
 		branch.pop()
 	else:
 		raise PacketLevelException('Method called outside of branch restriction.')
@@ -343,7 +347,7 @@ def endFile():
 def addText( text = "", mode = 'HOLD' ):
 	global packet, branch
 
-	if len(branch) == 2 and branch[ len(branch) - 1 ] == "File":
+	if len(branch) == 2 and branch[ len(branch) - 1 ] == "WRITE TEXT":
 		packet += START_MODE + DISPLAY_POSITION + WRITE_MODES[mode] + text
 	else:
 		raise PacketLevelException('Method called outside of branch restriction.')
@@ -364,18 +368,19 @@ def removePriority():
 def addString( text = "" ):
 	global packet, branch
 
-	if len(branch) == 2 and branch[ len(branch) -1 ] == "File":
+	if len(branch) == 2 and branch[ len(branch) -1 ] == "WRITE STRING":
 		if len(text) > 125:
 			text = text[:125]
 			print "** WARNING **: STRINGs may only be 125 bytes in size. Truncating."
 		packet += text
+        branch.pop()
 	else:
 		raise PacketLevelException('Method called outside of branch restriction.')
 
 def addDotsPicture( label, height = "07", width = "50", dots = "" ):
 	global packet, branch
 	#remember that at least 100 ms must have passed between receiving the width and first row
-	if len(branch) == 2 and branch[ len(branch) - 1 ] == "File":
+	if len(branch) == 2 and branch[ len(branch) - 1 ] == "WRITE SMALL DOTS":
 		packet += "I" + FILE_LABELS[label] + height + width + dots
 	else:
 		raise PacketLevelException('Method called outside of branch restriction.')
