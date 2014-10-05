@@ -32,11 +32,30 @@ def deleteFiles():
 
     deleted = sqlite.deleteSpaces(request.form['key'])
     if deleted == False:
-        return jsonify(result='failure', reason='No user, or more than one user, associted with this key. Please contact an admin'), 412
+        return invalidKey() 
+    return jsonify(result='success'), 204
+
+@app.route('/spaces/<int:fileLabel>/strings', methods=['POST'])
+def addString(fileLabel):
+    global sqlite
+    if not 'key' in request.form:
+        return nokey()
+
+    files = sqlite.getFileLabels(request.form['key'])
+    if files == False:
+        return invalidKey()
+
+    if fileLabel < 0 or fileLabel >= len(files):
+        return jsonify(result='failure', reason='file label is out of bounds'), 412
+
+    #talk to BetaBrite.py with files[fileLabel]
     return jsonify(result='success'), 204
 
 def noKey():
     return jsonify(result='failure', reason='no key supplied'), 401
+
+def invalidKey():
+    return jsonify(result='failure', reason='No user, or more than one user, associted with this key.'), 401
 
 if __name__ == "__main__":
     global sqlite

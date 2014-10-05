@@ -61,5 +61,19 @@ class sqlite():
         self.sqlSession.commit()
         return True
 
+    def getFileLabels(self, userKey):
+        try:
+            user = self.sqlSession.query(BetaBriteUser).filter_by(key=userKey).one()
+        except Exception as e:
+            print(e)
+            return False
+        
+        spaces = user.fileList
+        files = []
+        for space in spaces:
+            files.append(space.fileName)
+
+        return files
+
 if __name__ == '__main__':
     pass
