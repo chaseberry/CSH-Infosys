@@ -45,8 +45,8 @@ class sqlite():
         self.sqlSession.commit()
         return key
 
+    def deleteSpaces(self, key):
+        pass
+
 if __name__ == '__main__':
-    sql = sqlite()
-    sql.setup()
-    key = sql.registerSpaces(3)
-    print(key)
+    pass
