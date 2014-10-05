@@ -2,6 +2,7 @@ from flask import Flask
 from flask import jsonify 
 from flask import request
 from sqlite import sqlite
+from BetaBrite
 
 app = Flask(__name__)
 
@@ -48,7 +49,16 @@ def addString(fileLabel):
     if fileLabel < 0 or fileLabel >= len(files):
         return jsonify(result='failure', reason='file label is out of bounds'), 412
 
-    #talk to BetaBrite.py with files[fileLabel]
+    if not 'string' in requests.form:
+        return jsonify(result='failure', reason='No string given for string function'), 412
+
+    #Start BetaBrite
+    startPacket()
+    startFile(files[fileLabel], 'WRITE STRING')
+    addString(requests.form['string'])
+    endFile()
+    endPacket()
+    #End BetaBrite
     return jsonify(result='success'), 204
 
 @app.route('/spaces/<int:fileLabel>/texts', methods=['POST'])
@@ -64,7 +74,20 @@ def addText(fileLabel):
     if fileLabel < 0 or fileLabel >= len(files):
         return jsonify(result='failure', reason='file label is out of bounds'), 412 
     
-    #talk to BetaBrite.py
+    if not 'text' in requests.form:
+        return jsonify(result='failure', reason='No text given for text function'), 412
+
+    mode = 'HOLD'
+    if 'mode' in requests.form and requests.form['mode'] in WRITE_MODES:
+        mode = requests.form['mode']
+
+    #Start BetaBrite
+    startPacket()
+    startFile(files[fileLabel])
+    addText(files[fileLabel], mode)
+    endFile()
+    endPacket()
+    #End BetaBrite
     return jsonify(results='success'), 204
 
 def noKey():
