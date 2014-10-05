@@ -51,6 +51,22 @@ def addString(fileLabel):
     #talk to BetaBrite.py with files[fileLabel]
     return jsonify(result='success'), 204
 
+@app.route('/spaces/<int:fileLabel>/texts', methods=['POST'])
+def addText(fileLabel):
+    global sqlite
+    if not 'key' in request.form:
+        return nokey()
+
+    files = sqlite.getFileLabels(request.form['key'])
+    if files == False:
+        return invalidKey()
+
+    if fileLabel < 0 or fileLabel >= len(files):
+        return jsonify(result='failure', reason='file label is out of bounds'), 412 
+    
+    #talk to BetaBrite.py
+    return jsonify(results='success'), 204
+
 def noKey():
     return jsonify(result='failure', reason='no key supplied'), 401
 
