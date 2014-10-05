@@ -45,8 +45,21 @@ class sqlite():
         self.sqlSession.commit()
         return key
 
-    def deleteSpaces(self, key):
-        pass
+    def deleteSpaces(self, userKey):
+        try:
+            user = self.sqlSession.query(BetaBriteUser).filter_by(key=userKey).one()
+        except Exception as e:
+            print(e)
+            return False
+
+        spaces = user.fileList
+        self.sqlSession.delete(user)
+        for space in spaces:
+            space.inUse = False
+            space.userId = None
+
+        self.sqlSession.commit()
+        return True
 
 if __name__ == '__main__':
     pass

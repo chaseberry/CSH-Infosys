@@ -26,7 +26,17 @@ def requestFiles():
 
 @app.route('/spaces', methods=['DELETE'])
 def deleteFiles():
-    return 'nope'
+    global sqlite
+    if not 'key' in request.form:
+        return noKey()
+
+    deleted = sqlite.deleteSpaces(request.form['key'])
+    if deleted == False:
+        return jsonify(result='failure', reason='No user, or more than one user, associted with this key. Please contact an admin'), 412
+    return jsonify(result='success'), 204
+
+def noKey():
+    return jsonify(result='failure', reason='no key supplied'), 401
 
 if __name__ == "__main__":
     global sqlite
