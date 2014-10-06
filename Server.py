@@ -3,6 +3,7 @@ from flask import jsonify
 from flask import request
 from sqlite import sqlite
 from BetaBrite import *
+from BetaBriteSpace import BetaBriteSpace
 import json
 import argparse
 import time
@@ -56,10 +57,10 @@ def addStringToServer(fileLabel):
     if params == False or not 'string' in params:
         return jsonify(result='failure', reason='No string given for string function'), 412
 
-    added = sqlite.registerSpaceAsString(fileLabel, params['string'])
+    added = sqlite.registerSpaceAsString(files[fileLabel], params['string'])
 
     #Start BetaBrite
-    defineStringMemory(files[fileLabel], params['string'])
+    defineMemory()
     startPacket()
     startFile(files[fileLabel], 'WRITE STRING')
     addString(params['string'])
@@ -115,9 +116,9 @@ def addTextToServer(fileLabel):
             if fileNum >= 0 and fileNum < len(files):
                 texts[z] = re.sub(regex, '\x10' + FILE_LABELS[files[fileNum]], texts[z])
 
-    sqlite.registerSpaceAsText(fileLabel, jsonify(text=', '.join(texts), modes=', '.join(modes)))
+    sqlite.registerSpaceAsText(files[fileLabel], json.dumps({'texts':texts, 'modes':modes}))
     #Start BetaBrite
-    defineTextMemory(files[fileLabel], modes, texts)
+    defineMemory()
     startPacket()
     startFile(files[fileLabel])
     for z in range(len(texts)):
@@ -138,23 +139,28 @@ def clearSign():
     clearMemoryConfig()
     return jsonify(result='success'), 204 
 
-def defineTextMemory(label, mode, text):
+def defineMemory():
+    global sqlite
+    spaces =  sqlite.getRegisteredSpaces()
     startPacket()
     startSpecialFunction()
     startMemoryConfig()
-    size = 1 + sum(len(value) for value in text)
-    size += sum(len(value) for value in mode) * 2 
-    addTextConfig(label, size, 'ALL TIMES', 'NO TIMES')
+    for space in spaces:
+        if space.type == 'TEXT':
+            text = json.loads(space.value)
+            defineTextMemory(space.fileName, text['modes'], text['texts'])
+        elif space.type == 'STRING':
+            defineStringMemory(space.fileName, space.value)
     end()
     time.sleep(.1)
 
+def defineTextMemory(label, mode, text):
+    size = 1 + sum(len(value) for value in text)
+    size += sum(len(value) for value in mode) * 2 
+    addTextConfig(label, size, 'ALL TIMES', 'NO TIMES')
+
 def defineStringMemory(label, string):
-    startPacket()
-    startSpecialFunction()
-    startMemoryConfig()
     addStringConfig(label, len(string))
-    end()
-    time.sleep(.1)
 
 def parseParams(rawBody):
     try:

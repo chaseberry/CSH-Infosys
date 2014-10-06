@@ -50,7 +50,6 @@ class sqlite():
             space = self.sqlSession.query(BetaBriteSpace).filter_by(fileName=space).one()
         except Exception:
             return False
-
         space.type = "TEXT"
         space.value = value
         self.sqlSession.commit()
@@ -66,6 +65,9 @@ class sqlite():
         space.value = value
         self.sqlSession.commit()
         return True
+
+    def getRegisteredSpaces(self):
+        return self.sqlSession.query(BetaBriteSpace).filter(type!=None)
 
     def deleteSpaces(self, userKey):
         try:
