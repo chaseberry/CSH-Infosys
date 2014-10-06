@@ -55,6 +55,7 @@ def addStringToServer(fileLabel):
         return jsonify(result='failure', reason='No string given for string function'), 412
 
     #Start BetaBrite
+    defineTextMemory(files[fileLabel], None, params['string'])
     startPacket()
     startFile(files[fileLabel], 'WRITE STRING')
     addString(params['string'])
@@ -85,24 +86,30 @@ def addTextToServer(fileLabel):
     if 'multiText' in params:
         multi = True
 
-    #Start BetaBrite
-    startPacket()
-    startFile(files[fileLabel])
-
+    modes = []
+    texts = []
     if multi:
-        
         for text in params['multiText']:
             if not 'text' in text:
                 continue
             mode = 'HOLD'
             if 'mode' in params and params['mode'] in WRITE_MODES:
                 mode = params['mode']
-            addText(text['text'], mode)
+            modes.append(mode)
+            texts.append(text['text'])
     else:
         mode = 'HOLD'
         if 'mode' in params and params['mode'] in WRITE_MODES:
             mode = params['mode']
-        addText(params['text'], mode)
+        modes.append(mode)
+        texts.append(params['text'])
+     
+    #Start BetaBrite
+    defineTextMemory(files[fileLabel], modes, texts)
+    startPacket()
+    startFile(files[fileLabel])
+    for mode, text in modes, texts:
+        addText(text, mode)
     
     endFile()
     endPacket()
@@ -118,6 +125,18 @@ def clearSign():
     #return noKey()
     clearMemoryConfig()
     return jsonify(result='success'), 204 
+
+def defineTextMemory(label, mode, string):
+    startPacket()
+    startSpecialFunction()
+    startMemoryConfig()
+    size = 1 + sum(len(value) for value in label)
+    if not mode is None:
+        size += sum(len(value) for value in mode) * 2 
+    addTextConfig(label, size, 'ALL TIMES', 'NO TIMES')
+    endMemoryConfig()
+    endSpecialFunction()
+    endPacket()
 
 def parseParams(rawBody):
     try:
