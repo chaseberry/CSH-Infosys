@@ -368,7 +368,7 @@ def removePriority():
 def addString( text = "" ):
     global packet, branch, lock
 
-    if lock == 0 and len(branch) == 2 and branch[ len(branch) -1 ] == "WRITE STRING":
+    if lock == 1 and len(branch) == 2 and branch[ len(branch) -1 ] == "WRITE STRING":
         if len(text) > 125:
             text = text[:125]
             print "** WARNING **: STRINGs may only be 125 bytes in size. Truncating."
