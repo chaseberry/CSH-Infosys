@@ -105,10 +105,10 @@ def addTextToServer(fileLabel):
         texts.append(params['text'])
      
     #Start BetaBrite
-    defineTextMemory(files[fileLabel], modes, texts)
+    #defineTextMemory(files[fileLabel], modes, texts)
     startPacket()
     startFile(files[fileLabel])
-    for z in range(len(text)):
+    for z in range(len(texts)):
         addText(texts[z], modes[z])
     
     endFile()
@@ -130,7 +130,10 @@ def defineTextMemory(label, mode, string):
     startPacket()
     startSpecialFunction()
     startMemoryConfig()
-    size = 1 + sum(len(value) for value in label)
+    if isinstance(label, str):
+        size = 1 + len(label)
+    else:
+        size = 1 + sum(len(value) for value in label)
     if not mode is None:
         size += sum(len(value) for value in mode) * 2 
     addTextConfig(label, size, 'ALL TIMES', 'NO TIMES')
