@@ -108,8 +108,8 @@ def addTextToServer(fileLabel):
     defineTextMemory(files[fileLabel], modes, texts)
     startPacket()
     startFile(files[fileLabel])
-        for z in range(len(text)):
-            addText(texts[z], modes[z])
+    for z in range(len(text)):
+        addText(texts[z], modes[z])
     
     endFile()
     endPacket()
