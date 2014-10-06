@@ -56,7 +56,7 @@ def addString(fileLabel):
     #Start BetaBrite
     startPacket()
     startFile(files[fileLabel], 'WRITE STRING')
-    addString(requests['string'])
+    addString(params['string'])
     endFile()
     endPacket()
     #End BetaBrite
