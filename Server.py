@@ -88,7 +88,7 @@ def addTextToServer(fileLabel):
     startPacket()
     startFile(files[fileLabel])
 
-    if params['multiText']:
+    if multi:
         
         for text in params['multiText']:
             if not 'text' in text:
