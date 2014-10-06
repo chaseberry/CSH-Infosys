@@ -135,11 +135,11 @@ def defineTextMemory(label, mode, string):
     addTextConfig(label, size, 'ALL TIMES', 'NO TIMES')
     end()
 
-def defineStringMemory(label):
+def defineStringMemory(label, string):
     startPacket()
     startSpecialFunction()
     startMemoryConfig()
-    addStringConfig(label)
+    addStringConfig(label, len(string))
     end()
 
 def parseParams(rawBody):
