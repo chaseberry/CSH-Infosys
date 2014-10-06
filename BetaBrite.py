@@ -582,6 +582,11 @@ def getLevel():
 
     return branch
 
+def getPacket():
+    global packet
+
+    return packet
+
 def rawData( data ):
     global packet, branch
 
