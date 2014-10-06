@@ -55,7 +55,7 @@ def addStringToServer(fileLabel):
         return jsonify(result='failure', reason='No string given for string function'), 412
 
     #Start BetaBrite
-    defineTextMemory(files[fileLabel], None, params['string'])
+    defineStringMemory(files[fileLabel])
     startPacket()
     startFile(files[fileLabel], 'WRITE STRING')
     addString(params['string'])
@@ -130,16 +130,17 @@ def defineTextMemory(label, mode, string):
     startPacket()
     startSpecialFunction()
     startMemoryConfig()
-    if isinstance(label, str):
-        size = 1 + len(label)
-    else:
-        size = 1 + sum(len(value) for value in label)
-    if not mode is None:
-        size += sum(len(value) for value in mode) * 2 
+    size = 1 + sum(len(value) for value in label)
+    size += sum(len(value) for value in mode) * 2 
     addTextConfig(label, size, 'ALL TIMES', 'NO TIMES')
-    endMemoryConfig()
-    endSpecialFunction()
-    endPacket()
+    end()
+
+def defineStringMemory(label):
+    startPacket()
+    startSpecialFunction()
+    startMemoryConfig()
+    addStringConfig(label)
+    end()
 
 def parseParams(rawBody):
     try:
