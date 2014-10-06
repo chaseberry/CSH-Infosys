@@ -105,7 +105,7 @@ def addTextToServer(fileLabel):
         texts.append(params['text'])
      
     #Start BetaBrite
-    #defineTextMemory(files[fileLabel], modes, texts)
+    defineTextMemory(files[fileLabel], modes, texts)
     startPacket()
     startFile(files[fileLabel])
     for z in range(len(texts)):
