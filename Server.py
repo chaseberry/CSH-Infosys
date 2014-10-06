@@ -4,6 +4,7 @@ from flask import request
 from sqlite import sqlite
 from BetaBrite import *
 import json
+import argparse
 
 app = Flask(__name__)
 
@@ -135,6 +136,11 @@ if __name__ == "__main__":
     global sqlite
     sqlite = sqlite()
     sqlite.setup()
-    app.debug = True
-    app.run()
-
+    parser = argparse.ArgumentParser(description='InfoSys server config')
+    parser.add_argument('-t', '--test', help = 'Run in test mode', action='store_true')
+    args = parser.parse_args()
+    if args.test:
+        app.debug = True
+        app.run()
+    else:
+        app.run(host='0.0.0.0')
