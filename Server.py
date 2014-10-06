@@ -37,7 +37,7 @@ def deleteFiles():
     return jsonify(result='success'), 204
 
 @app.route('/spaces/<int:fileLabel>/strings', methods=['POST'])
-def addString(fileLabel):
+def addStringToServer(fileLabel):
     global sqlite
     key = request.headers.get('X-INFOSYS-KEY')
     if not validKey(key):
@@ -63,21 +63,21 @@ def addString(fileLabel):
     return jsonify(result='success'), 204
 
 @app.route('/spaces/<int:fileLabel>/texts', methods=['POST'])
-def addText(fileLabel):
+def addTextToServer(fileLabel):
     global sqlite
    
     key = request.headers.get('X-INFOSYS-KEY')
     if not validKey(key):
         return noKey() 
 
-    files = sqlite.getFileLabels(request.form['key'])
+    files = sqlite.getFileLabels(key)
 
     if fileLabel < 0 or fileLabel >= len(files):
         return jsonify(result='failure', reason='file label is out of bounds'), 412 
    
     params = parseParams(request.stream.read())
     
-    if params == false or not 'text' in params or not 'multiText' in params:
+    if params == False or (not 'text' in params and not 'multiText' in params):
         return jsonify(result='failure', reason='No \'text\' or \'multiText\' given for text function'), 412
 
     multi = False
@@ -88,14 +88,15 @@ def addText(fileLabel):
     startPacket()
     startFile(files[fileLabel])
 
-    if multi:
-        for text in multi:
+    if params['multiText']:
+        
+        for text in params['multiText']:
             if not 'text' in text:
                 continue
             mode = 'HOLD'
             if 'mode' in params and params['mode'] in WRITE_MODES:
                 mode = params['mode']
-            addText(text['text', mode])
+            addText(text['text'], mode)
     else:
         mode = 'HOLD'
         if 'mode' in params and params['mode'] in WRITE_MODES:
@@ -106,6 +107,16 @@ def addText(fileLabel):
     endPacket()
     #End BetaBrite
     return jsonify(results='success'), 204
+
+@app.route('/clear', methods=['POST'])
+def clearSign():
+    global sqlite
+
+    key = request.headers.get('X-INFOSYS-KEY')
+    #is key admin
+    #return noKey()
+    clearMemoryConfig()
+    return jsonify(result='success'), 204 
 
 def parseParams(rawBody):
     try:
