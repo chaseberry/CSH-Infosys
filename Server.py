@@ -108,14 +108,13 @@ def addTextToServer(fileLabel):
         modes.append(mode)
         texts.append(params['text'])
  
-    for text in texts:
-        match = re.search(regex, text)
+    for z in range(len(texts)):
+        match = re.search(regex, texts[z])
         if match:
-            fileNum = match.group(1)
-            if fileNum < 0 or fileNum >= len(files):
-                continue
-            text = re.sub(regex, '\x10' + files[fileNum], text)
-     
+            fileNum = int(match.group(1))
+            if fileNum >= 0 and fileNum < len(files):
+                texts[z] = re.sub(regex, '\x10' + FILE_LABELS[files[fileNum]], texts[z])
+
     sqlite.registerSpaceAsText(fileLabel, jsonify(text=', '.join(texts), modes=', '.join(modes)))
     #Start BetaBrite
     defineTextMemory(files[fileLabel], modes, texts)
@@ -147,7 +146,7 @@ def defineTextMemory(label, mode, text):
     size += sum(len(value) for value in mode) * 2 
     addTextConfig(label, size, 'ALL TIMES', 'NO TIMES')
     end()
-    time.sleep(.5)
+    time.sleep(.1)
 
 def defineStringMemory(label, string):
     startPacket()
@@ -155,7 +154,7 @@ def defineStringMemory(label, string):
     startMemoryConfig()
     addStringConfig(label, len(string))
     end()
-    time.sleep(.5)
+    time.sleep(.1)
 
 def parseParams(rawBody):
     try:
