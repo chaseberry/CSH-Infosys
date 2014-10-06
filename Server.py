@@ -127,11 +127,11 @@ def clearSign():
     clearMemoryConfig()
     return jsonify(result='success'), 204 
 
-def defineTextMemory(label, mode, string):
+def defineTextMemory(label, mode, text):
     startPacket()
     startSpecialFunction()
     startMemoryConfig()
-    size = 1 + sum(len(value) for value in label)
+    size = 1 + sum(len(value) for value in text)
     size += sum(len(value) for value in mode) * 2 
     addTextConfig(label, size, 'ALL TIMES', 'NO TIMES')
     end()
