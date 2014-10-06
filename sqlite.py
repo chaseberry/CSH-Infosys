@@ -75,5 +75,12 @@ class sqlite():
 
         return files
 
+    def validUser(self, userKey):
+        try:
+            user = self.sqlSession.query(BetaBriteUser).filter_by(key=userKey).one()
+        except Exception:
+            return False
+        return True
+
 if __name__ == '__main__':
     pass

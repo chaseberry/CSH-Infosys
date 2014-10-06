@@ -2,18 +2,20 @@ from flask import Flask
 from flask import jsonify 
 from flask import request
 from sqlite import sqlite
-from BetaBrite
+from BetaBrite import *
+import json
 
 app = Flask(__name__)
 
 @app.route('/spaces', methods=['POST'])
 def requestFiles():
     global sqlite
-    if not 'count' in request.form:
+    params = parseParams(request.stream.read())
+    if params == False or not params['count']:
         return jsonify(result='failure', reason="missing count"), 412
 
     try:
-        count = int(request.form['count'])
+        count = int(params['count'])
     except ValueError:
         return jsonify(result='failure', reason='count needs to be an int'), 412
     
@@ -28,34 +30,33 @@ def requestFiles():
 @app.route('/spaces', methods=['DELETE'])
 def deleteFiles():
     global sqlite
-    if not 'key' in request.form:
+    key = request.headers.get('X-INFOSYS-KEY')
+    if not validKey(key):
         return noKey()
-
-    deleted = sqlite.deleteSpaces(request.form['key'])
-    if deleted == False:
-        return invalidKey() 
+    deleted = sqlite.deleteSpaces(key)
     return jsonify(result='success'), 204
 
 @app.route('/spaces/<int:fileLabel>/strings', methods=['POST'])
 def addString(fileLabel):
     global sqlite
-    if not 'key' in request.form:
-        return nokey()
+    key = request.headers.get('X-INFOSYS-KEY')
+    if not validKey(key):
+        return noKey()
 
-    files = sqlite.getFileLabels(request.form['key'])
-    if files == False:
-        return invalidKey()
+    files = sqlite.getFileLabels(key)
 
     if fileLabel < 0 or fileLabel >= len(files):
         return jsonify(result='failure', reason='file label is out of bounds'), 412
 
-    if not 'string' in requests.form:
+    params = parseParams(request.stream.read())
+
+    if params == False or not 'string' in params:
         return jsonify(result='failure', reason='No string given for string function'), 412
 
     #Start BetaBrite
     startPacket()
     startFile(files[fileLabel], 'WRITE STRING')
-    addString(requests.form['string'])
+    addString(requests['string'])
     endFile()
     endPacket()
     #End BetaBrite
@@ -64,37 +65,60 @@ def addString(fileLabel):
 @app.route('/spaces/<int:fileLabel>/texts', methods=['POST'])
 def addText(fileLabel):
     global sqlite
-    if not 'key' in request.form:
-        return nokey()
+   
+    key = request.headers.get('X-INFOSYS-KEY')
+    if not validKey(key):
+        return noKey() 
 
     files = sqlite.getFileLabels(request.form['key'])
-    if files == False:
-        return invalidKey()
 
     if fileLabel < 0 or fileLabel >= len(files):
         return jsonify(result='failure', reason='file label is out of bounds'), 412 
+   
+    params = parseParams(request.stream.read())
     
-    if not 'text' in requests.form:
-        return jsonify(result='failure', reason='No text given for text function'), 412
+    if params == false or not 'text' in params or not 'multiText' in params:
+        return jsonify(result='failure', reason='No \'text\' or \'multiText\' given for text function'), 412
 
-    mode = 'HOLD'
-    if 'mode' in requests.form and requests.form['mode'] in WRITE_MODES:
-        mode = requests.form['mode']
+    multi = False
+    if 'multiText' in params:
+        multi = True
 
     #Start BetaBrite
     startPacket()
     startFile(files[fileLabel])
-    addText(files[fileLabel], mode)
+
+    if multi:
+        for text in multi:
+            if not 'text' in text:
+                continue
+            mode = 'HOLD'
+            if 'mode' in params and params['mode'] in WRITE_MODES:
+                mode = params['mode']
+            addText(text['text', mode])
+    else:
+        mode = 'HOLD'
+        if 'mode' in params and params['mode'] in WRITE_MODES:
+            mode = params['mode']
+        addText(params['text'], mode)
+    
     endFile()
     endPacket()
     #End BetaBrite
     return jsonify(results='success'), 204
 
-def noKey():
-    return jsonify(result='failure', reason='no key supplied'), 401
+def parseParams(rawBody):
+    try:
+        return json.loads(rawBody)
+    except ValueError:
+        return False
 
-def invalidKey():
-    return jsonify(result='failure', reason='No user, or more than one user, associted with this key.'), 401
+def validKey(key):
+    global sqlite
+    return key and sqlite.validUser(key)  
+
+def noKey():
+    return jsonify(result='failure', reason='Invalid INFOSYS-KEY supplied'), 401
 
 if __name__ == "__main__":
     global sqlite
