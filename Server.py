@@ -55,7 +55,7 @@ def addStringToServer(fileLabel):
         return jsonify(result='failure', reason='No string given for string function'), 412
 
     #Start BetaBrite
-    defineStringMemory(files[fileLabel])
+    defineStringMemory(files[fileLabel], params['string'])
     startPacket()
     startFile(files[fileLabel], 'WRITE STRING')
     addString(params['string'])
