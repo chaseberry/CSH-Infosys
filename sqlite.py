@@ -45,6 +45,28 @@ class sqlite():
         self.sqlSession.commit()
         return key
 
+    def registerSpaceAsText(self,  space, value):
+        try:
+            space = self.sqlSession.query(BetaBriteSpace).filter_by(fileName=space).one()
+        except Exception:
+            return False
+
+        space.type = "TEXT"
+        space.value = value
+        self.sqlSession.commit()
+        return True 
+
+    def registerSpaceAsString(self,  space, value):
+        try:
+            space = self.sqlSession.query(BetaBriteSpace).filter_by(fileName=space).one()
+        except Exception:
+            return False
+
+        space.type = "STRING"
+        space.value = value
+        self.sqlSession.commit()
+        return True
+
     def deleteSpaces(self, userKey):
         try:
             user = self.sqlSession.query(BetaBriteUser).filter_by(key=userKey).one()

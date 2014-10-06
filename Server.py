@@ -55,6 +55,8 @@ def addStringToServer(fileLabel):
     if params == False or not 'string' in params:
         return jsonify(result='failure', reason='No string given for string function'), 412
 
+    added = sqlite.registerSpaceAsString(fileLabel, params['string'])
+
     #Start BetaBrite
     defineStringMemory(files[fileLabel], params['string'])
     startPacket()
@@ -68,7 +70,7 @@ def addStringToServer(fileLabel):
 @app.route('/spaces/<int:fileLabel>/texts', methods=['POST'])
 def addTextToServer(fileLabel):
     global sqlite
-   
+    regex = '<STRINGFILE:(\d+)>' 
     key = request.headers.get('X-INFOSYS-KEY')
     if not validKey(key):
         return noKey() 
@@ -104,7 +106,16 @@ def addTextToServer(fileLabel):
             mode = params['mode']
         modes.append(mode)
         texts.append(params['text'])
+ 
+    for text in texts:
+        match = re.search(regex, text)
+        if match:
+            fileNum = match.group(1)
+            if fileNum < 0 or fileNum >= len(files):
+                continue
+            text = re.sub(regex, '\x10' + files[fileNum], text)
      
+    sqlite.registerSpaceAsText(fileLabel, jsonify(text=', '.join(texts), modes=', '.join(modes)))
     #Start BetaBrite
     defineTextMemory(files[fileLabel], modes, texts)
     startPacket()

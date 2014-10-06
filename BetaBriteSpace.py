@@ -8,3 +8,5 @@ class BetaBriteSpace(Base):
     inUse = Column(Boolean, default=False)
     fileName = Column(String) 
     userId = Column(Integer, ForeignKey('BetaBriteUser.id'))
+    type = Column(String)
+    value = Column(String)
