@@ -57,13 +57,15 @@ def addStringToServer(fileLabel):
     if params == False or not 'string' in params:
         return jsonify(result='failure', reason='No string given for string function'), 412
 
-    added = sqlite.registerSpaceAsString(files[fileLabel], params['string'])
+    string = re.sub(r'[^\x00-\x7F]+','', params['string']) 
+
+    added = sqlite.registerSpaceAsString(files[fileLabel], string)
 
     #Start BetaBrite
     defineMemory()
     startPacket()
     startFile(files[fileLabel], 'WRITE STRING')
-    addString(params['string'])
+    addString(string)
     endFile()
     endPacket()
     #End BetaBrite
@@ -86,7 +88,6 @@ def addTextToServer(fileLabel):
     
     if params == False or (not 'text' in params and not 'multiText' in params):
         return jsonify(result='failure', reason='No \'text\' or \'multiText\' given for text function'), 412
-
     multi = False
     if 'multiText' in params:
         multi = True
