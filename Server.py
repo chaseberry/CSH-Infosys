@@ -5,6 +5,7 @@ from sqlite import sqlite
 from BetaBrite import *
 import json
 import argparse
+import time
 
 app = Flask(__name__)
 
@@ -134,6 +135,7 @@ def defineTextMemory(label, mode, string):
     size += sum(len(value) for value in mode) * 2 
     addTextConfig(label, size, 'ALL TIMES', 'NO TIMES')
     end()
+    time.sleep(.5)
 
 def defineStringMemory(label, string):
     startPacket()
@@ -141,6 +143,7 @@ def defineStringMemory(label, string):
     startMemoryConfig()
     addStringConfig(label, len(string))
     end()
+    time.sleep(.5)
 
 def parseParams(rawBody):
     try:
