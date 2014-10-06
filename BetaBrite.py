@@ -366,14 +366,14 @@ def removePriority():
     endPacket()
 
 def addString( text = "" ):
-    global packet, branch
+    global packet, branch, lock
 
-    if len(branch) == 2 and branch[ len(branch) -1 ] == "WRITE STRING":
+    if lock == 0 and len(branch) == 2 and branch[ len(branch) -1 ] == "WRITE STRING":
         if len(text) > 125:
             text = text[:125]
             print "** WARNING **: STRINGs may only be 125 bytes in size. Truncating."
         packet += text
-        branch.pop()
+        lock +=1
     else:
         raise PacketLevelException('Method called outside of branch restriction.')
 
