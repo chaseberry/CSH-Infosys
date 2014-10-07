@@ -104,13 +104,14 @@ def addTextToServer(fileLabel):
             if 'mode' in params and params['mode'] in WRITE_MODES:
                 mode = params['mode']
             modes.append(mode)
-            texts.append(text['text'])
+
+            texts.append(re.sub(r'[^\x00-\x7F]+','', params['text']))
     else:
         mode = 'HOLD'
         if 'mode' in params and params['mode'] in WRITE_MODES:
             mode = params['mode']
         modes.append(mode)
-        texts.append(params['text'])
+        texts.append(re.sub(r'[^\x00-\x7F]+','', params['text']))
  
     for z in range(len(texts)):
         match = re.search(regex, texts[z])
