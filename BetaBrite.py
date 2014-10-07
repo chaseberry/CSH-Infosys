@@ -307,7 +307,11 @@ def endPacket( ):
     if len(branch) == 1:
         #packet += END_OF_TEXT
         #checksum =
+        
         packet += END_OF_TRANSMISSION
+        if packet[5] == COMMAND_CODES['WRITE SMALL DOTS']:
+            endDotPacket()
+            return
         packet = NULL * 8 + packet
         file = open( device, "wb" )
         log = open( "/var/log/betabrite.txt", "wb" )
@@ -319,6 +323,20 @@ def endPacket( ):
         branch.pop()
     else:
         raise PacketLevelException('Method called outside of branch restriction.')
+
+def endDotPacket():
+    global packet, branch, device
+    packet1 = NULL * 8 + packet[:11]
+    packet2 = packet[10:]
+    file = open(device, 'wb')
+    log = open('/var/log/betabrite.txt', 'wb')
+    log.write(packet)
+    log.write('\n')
+    log.close()
+    file.write(packet1)
+    time.sleep(.2)
+    file.write(packet2)
+    branch.pop()
 
 def startFile( label, option='WRITE TEXT' ):
     global packet, branch, lock
