@@ -106,5 +106,11 @@ class sqlite():
             return False
         return True
 
+    def getSpace(self, space):
+        try:
+            return self.sqlSession.query(BetaBriteSpace).filter_by(fileName=space).one()
+        except Exception:
+            return None
+
 if __name__ == '__main__':
     pass

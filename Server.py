@@ -101,11 +101,11 @@ def addTextToServer(fileLabel):
             if not 'text' in text:
                 continue
             mode = 'HOLD'
-            if 'mode' in params and params['mode'] in WRITE_MODES:
-                mode = params['mode']
+            if 'mode' in text and text['mode'] in WRITE_MODES:
+                mode = text['mode']
             modes.append(mode)
 
-            texts.append(re.sub(r'[^\x00-\x7F]+','', params['text']))
+            texts.append(re.sub(r'[^\x00-\x7F]+','', text['text']))
     else:
         mode = 'HOLD'
         if 'mode' in params and params['mode'] in WRITE_MODES:
@@ -140,8 +140,26 @@ def clearSign():
     key = request.headers.get('X-INFOSYS-KEY')
     #is key admin
     #return noKey()
-    clearMemoryConfig()
+    #clearMemoryConfig()
     return jsonify(result='success'), 204 
+
+@app.route('/spaces/<int:fileLabel>', methods=['GET'])
+def getSpace(fileLabel):
+    global sqlite
+    key = request.headers.get('X-INFOSYS-KEY')
+    if not validKey(key):
+        return noKey() 
+
+    files = sqlite.getFileLabels(key)
+
+    if fileLabel < 0 or fileLabel >= len(files):
+        return jsonify(result='failure', reason='Space label is out of bounds'), 412
+  
+    space = sqlite.getSpace(files[fileLabel])
+    if space == None:
+        return jsonify(result='failure', reason='Space does not exist'), 412
+    
+    return jsonify(result='success', type=space.type, value=space.value)
 
 def defineMemory():
     global sqlite
@@ -190,5 +208,4 @@ if __name__ == "__main__":
         app.debug = True
         app.run()
     else:
-        app.debug = True
         app.run(host='0.0.0.0')
