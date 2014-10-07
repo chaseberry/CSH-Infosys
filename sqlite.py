@@ -66,6 +66,17 @@ class sqlite():
         self.sqlSession.commit()
         return True
 
+    def registerSpaceAsPic(self, space, value):
+        try:
+            space = self.sqlSession.query(BetaBriteSpace).filter_by(fileName=space).one()
+        except Exception:
+            return False
+
+        space.type = "PICTURE"
+        space.value = value
+        self.sqlSession.commit()
+        return True 
+
     def getRegisteredSpaces(self):
         return self.sqlSession.query(BetaBriteSpace).filter(type!=None)
 

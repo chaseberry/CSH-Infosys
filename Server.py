@@ -40,7 +40,7 @@ def deleteFiles():
     deleted = sqlite.deleteSpaces(key)
     return jsonify(result='success'), 204
 
-@app.route('/spaces/<int:fileLabel>/strings', methods=['POST'])
+@app.route('/spaces/<int:fileLabel>/string', methods=['POST'])
 def addStringToServer(fileLabel):
     global sqlite
     clear()
@@ -72,11 +72,12 @@ def addStringToServer(fileLabel):
     #End BetaBrite
     return jsonify(result='success'), 204
 
-@app.route('/spaces/<int:fileLabel>/texts', methods=['POST'])
+@app.route('/spaces/<int:fileLabel>/text', methods=['POST'])
 def addTextToServer(fileLabel):
     global sqlite
     clear()
-    regex = '<STRINGFILE:(\d+)>' 
+    stringRegex = '<STRINGFILE:(\d+)>' 
+    pictureRegex = '<PICTUREFILE:(\d+)>'
     key = request.headers.get('X-INFOSYS-KEY')
     if not validKey(key):
         return noKey() 
@@ -114,11 +115,16 @@ def addTextToServer(fileLabel):
         texts.append(re.sub(r'[^\x00-\x7F]+','', params['text']))
  
     for z in range(len(texts)):
-        match = re.search(regex, texts[z])
+        match = re.search(stringRegex, texts[z])
         if match:
             fileNum = int(match.group(1))
             if fileNum >= 0 and fileNum < len(files):
-                texts[z] = re.sub(regex, '\x10' + FILE_LABELS[files[fileNum]], texts[z])
+                texts[z] = re.sub(stringRegex, '\x10' + FILE_LABELS[files[fileNum]], texts[z])
+        match = re.search(pictureRegex, texts[z])
+        if match:
+            fileNum = int(match.group(1))
+            if fileNum >=0 and fileNum < len(files):
+                texts[z] = re.sub(pictureRegex, '\x14' + FILE_LABELS[files[fileNum]], texts[x])
 
     sqlite.registerSpaceAsText(files[fileLabel], json.dumps({'texts':texts, 'modes':modes}))
     #Start BetaBrite
@@ -132,6 +138,53 @@ def addTextToServer(fileLabel):
     endPacket()
     #End BetaBrite
     return jsonify(results='success'), 204
+
+@app.route('/spaces/<int:fileLabel>/picture', methods=['POST'])
+def registerDotPicture(fileLabel):
+    global sqlite
+    key = request.headers.get('X-INFOSYS-KEY')
+    if not validKey(key):
+        return noKey() 
+
+    files = sqlite.getFileLabels(key)
+
+    if fileLabel < 0 or fileLabel >= len(files):
+        return jsonify(result='failure', reason='file label is out of bounds'), 412 
+   
+    params = parseParams(request.stream.read())
+    if params == False or not 'width' in params or not 'height' in params:
+        return jsonify(result='failure', reason='Need to give a width and a height'), 412
+    width = params['width']
+    height = params['height']
+    if width <=0 or width > 255:
+        return jsonify(result='failure', reason='Width must between 1 and 255 inclusive'), 412
+    if height <=0 or height > 31:
+        return jsonify(result='failure', reason='height must between 1 and 31 inclusive'), 412
+
+    if not 'dots' in params or not isinstance(params['dots'], list):i
+        return jsonify(result='failure', reason='Need an array of dots to draw the picture'), 412
+
+    dots = []
+    for dotRow in param['dots']:
+        if not isinstance(dotRow, str):
+            return jsonify(result='failure', reason='Each row must be a string'), 412
+        for dot in dotRow:
+            try:
+                if int(dot) < 0 or int(dot) > 8:
+                return jsonify(result='faulure', reason='each \'dot\' must be a number between 0 and 8 inclusive'), 412
+            except Exception:
+                return jsonify(result='faulure', reason='each \'dot\' must be a number between 0 and 8 inclusive'), 412
+        dots.append(dotRow)
+
+    sqlite.registerSpaceAsPicture(files[fileLabel], json.dumps({'height':height, 'width':width, 'dots':dots}))
+    #Start BetaBrite
+    defineMemory() 
+    startPacket()
+    startFile(files['fileLabel'], 'WRITE SMALL DOT')
+    addDotsPicture(files['fileLabel'], hex(height), hex(width), parseDots(dots))
+    endFile()
+    end()
+    #End BetaBrite
 
 @app.route('/clear', methods=['POST'])
 def clearSign():
@@ -161,6 +214,13 @@ def getSpace(fileLabel):
     
     return jsonify(result='success', type=space.type, value=space.value)
 
+def parseDots(dots):
+    dots = ''
+    delim = '\x0D'
+    for dotRow in dots:
+        dots += dotRow + delim
+    return dots 
+
 def defineMemory():
     global sqlite
     spaces =  sqlite.getRegisteredSpaces()
@@ -173,6 +233,8 @@ def defineMemory():
             defineTextMemory(space.fileName, text['modes'], text['texts'])
         elif space.type == 'STRING':
             defineStringMemory(space.fileName, space.value)
+        elif space.type == 'PICTURE':
+            definePictureMemory(space.fileName, json.loads(space.value))
     end()
     time.sleep(.1)
 
@@ -183,6 +245,9 @@ def defineTextMemory(label, mode, text):
 
 def defineStringMemory(label, string):
     addStringConfig(label, len(string))
+
+def definePictureMemory(label, value):
+    addDotsPictureConfig(label, hex(value['height']), hex(value['width']))
 
 def parseParams(rawBody):
     try:

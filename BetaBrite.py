@@ -319,7 +319,6 @@ def endPacket( ):
         log.write( packet )
         log.write( "\n" )
         log.close()
-        print(":".join("{:02x}".format(ord(c)) for c in packet))
         branch.pop()
     else:
         raise PacketLevelException('Method called outside of branch restriction.')
@@ -328,15 +327,13 @@ def endDotPacket():
     global packet, branch, device
     packet1 = NULL * 8 + packet[:11]
     packet2 = packet[11:]
-    print(":".join("{:02x}".format(ord(c)) for c in packet1))
-    print(":".join("{:02x}".format(ord(c)) for c in packet2)) 
     file = open(device, 'wb')
     log = open('/var/log/betabrite.txt', 'wb')
     log.write(packet)
     log.write('\n')
     log.close()
     file.write(packet1)
-    time.sleep(.25)
+    time.sleep(.15)
     file.write(packet2)
     branch.pop()
 
