@@ -43,6 +43,7 @@ def deleteFiles():
 @app.route('/spaces/<int:fileLabel>/strings', methods=['POST'])
 def addStringToServer(fileLabel):
     global sqlite
+    clear()
     key = request.headers.get('X-INFOSYS-KEY')
     if not validKey(key):
         return noKey()
@@ -74,6 +75,7 @@ def addStringToServer(fileLabel):
 @app.route('/spaces/<int:fileLabel>/texts', methods=['POST'])
 def addTextToServer(fileLabel):
     global sqlite
+    clear()
     regex = '<STRINGFILE:(\d+)>' 
     key = request.headers.get('X-INFOSYS-KEY')
     if not validKey(key):
