@@ -6,7 +6,7 @@
 #Current maintainer: Josh McSavaney ( mcsaucy@csh.rit.edu )
 
 import datetime
-
+import time
 # The \0 chars are merely to get the device's attention
 NULL = "\0"
 START_OF_HEADER = "\x01"
@@ -319,7 +319,7 @@ def endPacket( ):
         log.write( packet )
         log.write( "\n" )
         log.close()
-
+        print(":".join("{:02x}".format(ord(c)) for c in packet))
         branch.pop()
     else:
         raise PacketLevelException('Method called outside of branch restriction.')
@@ -327,14 +327,16 @@ def endPacket( ):
 def endDotPacket():
     global packet, branch, device
     packet1 = NULL * 8 + packet[:11]
-    packet2 = packet[10:]
+    packet2 = packet[11:]
+    print(":".join("{:02x}".format(ord(c)) for c in packet1))
+    print(":".join("{:02x}".format(ord(c)) for c in packet2)) 
     file = open(device, 'wb')
     log = open('/var/log/betabrite.txt', 'wb')
     log.write(packet)
     log.write('\n')
     log.close()
     file.write(packet1)
-    time.sleep(.2)
+    time.sleep(.25)
     file.write(packet2)
     branch.pop()
 
@@ -399,7 +401,7 @@ def addDotsPicture( label, height = "07", width = "50", dots = "" ):
     global packet, branch
     #remember that at least 100 ms must have passed between receiving the width and first row
     if len(branch) == 2 and branch[ len(branch) - 1 ] == "WRITE SMALL DOTS":
-        packet += "I" + FILE_LABELS[label] + height + width + dots
+        packet +=  height + width + dots
     else:
         raise PacketLevelException('Method called outside of branch restriction.')
 
@@ -534,7 +536,7 @@ def addDotsPictureConfig( label, pixelRows, pixelCols, colorStatus = '8-color', 
     global packet, branch, lock
 
     if len(branch) == 3 and branch[ len(branch) - 1 ] == "Memory Config" and lock == 2:
-        packet +=  FILE_TYPES['DOTS PICTURE'] + FILE_LABELS[label] + str(pixelRows) + str(pixelCols) + COLOR_STATUS[colorStatus]
+        packet += FILE_LABELS[label]+ FILE_TYPES['DOTS PICTURE'] + KEYBOARD_PROTECT[kbdProtect] + str(pixelRows) + str(pixelCols) + COLOR_STATUS[colorStatus]
     else:
         raise PacketLevelException('Method called outside of branch restriction.')
 
