@@ -128,5 +128,17 @@ class sqlite():
         other = self.sqlSession.query(BetaBriteSpace).filter(type!='TEXT', type!=None)
         return [text, other]
 
+    def getUsers(self):
+        userList = []
+        users = self.sqlSession.query(BetaBriteUser).all()
+        for user in users:
+            files = []
+            for space in user.fileList:
+                files.append(space.fileName)
+            userList.append('key: ' + user.key + '   spaces:' + str(files))
+
+        return userList
 if __name__ == '__main__':
-    pass
+    sqlite = sqlite()
+    sqlite.setup()
+    print(sqlite.getUsers())
