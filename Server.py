@@ -124,7 +124,7 @@ def addTextToServer(fileLabel):
         if match:
             fileNum = int(match.group(1))
             if fileNum >=0 and fileNum < len(files):
-                texts[z] = re.sub(pictureRegex, '\x14' + FILE_LABELS[files[fileNum]], texts[x])
+                texts[z] = re.sub(pictureRegex, '\x14' + FILE_LABELS[files[fileNum]], texts[z])
 
     sqlite.registerSpaceAsText(files[fileLabel], json.dumps({'texts':texts, 'modes':modes}))
     #Start BetaBrite
@@ -161,20 +161,36 @@ def registerDotPicture(fileLabel):
     if height <=0 or height > 31:
         return jsonify(result='failure', reason='height must between 1 and 31 inclusive'), 412
 
-    if not 'dots' in params or not isinstance(params['dots'], list):i
+    if not 'dots' in params or not isinstance(params['dots'], list):
         return jsonify(result='failure', reason='Need an array of dots to draw the picture'), 412
 
     dots = []
-    for dotRow in param['dots']:
-        if not isinstance(dotRow, str):
+    numHeight = 0
+    for dotRow in params['dots']:
+        numHeight += 1
+        numWidth = 0
+        try:
+            for dot in dotRow:
+                numWidth += 1
+                try:
+                    if int(dot) < 0 or int(dot) > 8:
+                        return jsonify(result='faulure', reason='each \'dot\' must be a number between 0 and 8 inclusive'), 412
+                except Exception:
+                    return jsonify(result='faulure', reason='each \'dot\' must be a number between 0 and 8 inclusive'), 412
+                
+        
+        except Exception:
             return jsonify(result='failure', reason='Each row must be a string'), 412
-        for dot in dotRow:
-            try:
-                if int(dot) < 0 or int(dot) > 8:
-                return jsonify(result='faulure', reason='each \'dot\' must be a number between 0 and 8 inclusive'), 412
-            except Exception:
-                return jsonify(result='faulure', reason='each \'dot\' must be a number between 0 and 8 inclusive'), 412
-        dots.append(dotRow)
+      
+        if numWidth != width:
+            return jsonify(result='failure', reason='Each row must be ' + str(width) + ' long'), 412  
+       
+        dots.append(dotRow) 
+        
+    if len(dots) != height:
+        return jsonify(result='failure', reason='You must have ' + str(height) + ' rows'), 412
+
+    print(dots)
 
     sqlite.registerSpaceAsPicture(files[fileLabel], json.dumps({'height':height, 'width':width, 'dots':dots}))
     #Start BetaBrite
