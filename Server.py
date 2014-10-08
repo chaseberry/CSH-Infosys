@@ -140,7 +140,7 @@ def addTextToServer(fileLabel):
     return jsonify(results='success'), 204
 
 @app.route('/spaces/<int:fileLabel>/picture', methods=['POST'])
-def registerDotPicture(fileLabel):
+def addDotPicture(fileLabel):
     global sqlite
     key = request.headers.get('X-INFOSYS-KEY')
     if not validKey(key):
@@ -190,17 +190,16 @@ def registerDotPicture(fileLabel):
     if len(dots) != height:
         return jsonify(result='failure', reason='You must have ' + str(height) + ' rows'), 412
 
-    print(dots)
-
     sqlite.registerSpaceAsPicture(files[fileLabel], json.dumps({'height':height, 'width':width, 'dots':dots}))
     #Start BetaBrite
     defineMemory() 
     startPacket()
-    startFile(files['fileLabel'], 'WRITE SMALL DOT')
-    addDotsPicture(files['fileLabel'], hex(height), hex(width), parseDots(dots))
+    startFile(files[fileLabel], 'WRITE SMALL DOTS')
+    addDotsPicture(files[fileLabel], hex(height), hex(width), parseDots(dots))
     endFile()
     end()
     #End BetaBrite
+    return jsonify(result='success'),204
 
 @app.route('/clear', methods=['POST'])
 def clearSign():
@@ -289,4 +288,5 @@ if __name__ == "__main__":
         app.debug = True
         app.run()
     else:
+        app.debug = True
         app.run(host='0.0.0.0')
