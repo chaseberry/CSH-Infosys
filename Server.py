@@ -206,6 +206,7 @@ def getSpace(fileLabel):
     return jsonify(result='success', type=space.type, value=space.value)
 
 def addTextToSign(fileLabel, texts, modes):
+    clear()
     startPacket()
     startFile(fileLabel)
     for z in range(len(texts)):
@@ -215,16 +216,18 @@ def addTextToSign(fileLabel, texts, modes):
     endPacket()
 
 def addStringToSign(fileLabel, string):
+    clear()
     startPacket()
     startFile(fileLabel, 'WRITE STRING')
     addString(string)
     endFile()
     endPacket()
 
-def addPictureToSign(fileLabel, height, width,dots):
+def addPictureToSign(fileLabel, height, width, dots):
+    clear()
     startPacket()
-    startFile(files['fileLabel'], 'WRITE SMALL DOT')
-    addDotsPicture(files['fileLabel'], toHex(height), toHex(width), parseDots(dots))
+    startFile(fileLabel, 'WRITE SMALL DOTS')
+    addDotsPicture(fileLabel, toHex(height), toHex(width), parseDots(dots))
     endFile()
     end()
 
@@ -281,15 +284,18 @@ def noKey():
 
 def updateSign():
     global sqlite
-    texts, others =  sqlite.getRegisteredSpaces()
+    defineMemory()
+    spaces =  sqlite.getTextandOtherSpaces()
+    texts = spaces[0]
+    others = spaces[1]
     for text in texts:
         textData = json.loads(text.value)
-        addTextToSign(text.fileName, textData['texts'], textData['modes']
+        addTextToSign(text.fileName, textData['texts'], textData['modes'])
 
     for other in others:
-        if other.type = 'STRING':
+        if other.type == 'STRING':
             addStringToSign(other.fileName, other.value)
-        elif other.type = 'PICTURE':
+        elif other.type == 'PICTURE':
             pictureData = json.loads(other.value)
             addPictureToSign(other.fileName, pictureData['height'], pictureData['width'], pictureData['dots']) 
 
@@ -299,7 +305,6 @@ def startUp(test):
     sqlite.setup()
     clearMemoryConfig()
     time.sleep(.1)
-    defineMemory()
     updateSign()
     if test:
         app.debug = True
