@@ -183,7 +183,7 @@ def addDotPicture(fileLabel):
     sqlite.registerSpaceAsPicture(files[fileLabel], json.dumps({'height':height, 'width':width, 'dots':dots}))
     #Start BetaBrite
     defineMemory() 
-    addPictureToSign(files['fileLabel'], height, width, dots) 
+    addPictureToSign(files[fileLabel], height, width, dots) 
     #End BetaBrite
     return jsonify(result='success'),204
 
