@@ -202,16 +202,6 @@ def registerDotPicture(fileLabel):
     end()
     #End BetaBrite
 
-@app.route('/clear', methods=['POST'])
-def clearSign():
-    global sqlite
-
-    key = request.headers.get('X-INFOSYS-KEY')
-    #is key admin
-    #return noKey()
-    #clearMemoryConfig()
-    return jsonify(result='success'), 204 
-
 @app.route('/spaces/<int:fileLabel>', methods=['GET'])
 def getSpace(fileLabel):
     global sqlite
@@ -278,15 +268,28 @@ def validKey(key):
 def noKey():
     return jsonify(result='failure', reason='Invalid INFOSYS-KEY supplied'), 401
 
-if __name__ == "__main__":
+def updateSign():
+    global sqlite
+    texts, others =  sqlite.getRegisteredSpaces()
+    for text in texts:
+        pass 
+
+def startUp(test):
     global sqlite
     sqlite = sqlite()
     sqlite.setup()
-    parser = argparse.ArgumentParser(description='InfoSys server config')
-    parser.add_argument('-t', '--test', help = 'Run in test mode', action='store_true')
-    args = parser.parse_args()
-    if args.test:
+    clearMemoryConfig()
+    time.sleep(.1)
+    defineMemory()
+    updateSign()
+    if test:
         app.debug = True
         app.run()
     else:
         app.run(host='0.0.0.0')
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='InfoSys server config')
+    parser.add_argument('-t', '--test', help = 'Run in test mode', action='store_true')
+    args = parser.parse_args()
+    startUp(args.test)

@@ -123,5 +123,10 @@ class sqlite():
         except Exception:
             return None
 
+    def getTextandOtherSpaces(self):
+        text = self.sqlSession.query(BetaBriteSpace).filter_by(type='TEXT')
+        other = self.sqlSession.query(BetaBriteSpace).filter_by(type!='TEXT', type!=None)
+        return text, other
+
 if __name__ == '__main__':
     pass
