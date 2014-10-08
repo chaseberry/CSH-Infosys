@@ -64,11 +64,7 @@ def addStringToServer(fileLabel):
 
     #Start BetaBrite
     defineMemory()
-    startPacket()
-    startFile(files[fileLabel], 'WRITE STRING')
-    addString(string)
-    endFile()
-    endPacket()
+    addStringToSign(files[fileLabel], string) 
     #End BetaBrite
     return jsonify(result='success'), 204
 
@@ -129,13 +125,7 @@ def addTextToServer(fileLabel):
     sqlite.registerSpaceAsText(files[fileLabel], json.dumps({'texts':texts, 'modes':modes}))
     #Start BetaBrite
     defineMemory()
-    startPacket()
-    startFile(files[fileLabel])
-    for z in range(len(texts)):
-        addText(texts[z], modes[z])
-    
-    endFile()
-    endPacket()
+    addTextToSign(files[fileLabel], texts, modes) 
     #End BetaBrite
     return jsonify(results='success'), 204
 
@@ -190,16 +180,10 @@ def registerDotPicture(fileLabel):
     if len(dots) != height:
         return jsonify(result='failure', reason='You must have ' + str(height) + ' rows'), 412
 
-    print(dots)
-
     sqlite.registerSpaceAsPicture(files[fileLabel], json.dumps({'height':height, 'width':width, 'dots':dots}))
     #Start BetaBrite
     defineMemory() 
-    startPacket()
-    startFile(files['fileLabel'], 'WRITE SMALL DOT')
-    addDotsPicture(files['fileLabel'], hex(height), hex(width), parseDots(dots))
-    endFile()
-    end()
+    addPictureToSign(files['fileLabel'], toHex() 
     #End BetaBrite
 
 @app.route('/spaces/<int:fileLabel>', methods=['GET'])
@@ -219,6 +203,29 @@ def getSpace(fileLabel):
         return jsonify(result='failure', reason='Space does not exist'), 412
     
     return jsonify(result='success', type=space.type, value=space.value)
+
+def addTextToSign(fileLabel, texts, modes):
+    startPacket()
+    startFile(fileLabel)
+    for z in range(len(texts)):
+        addText(texts[z], modes[z])
+    
+    endFile()
+    endPacket()
+
+def addStringToSign(fileLabel, string):
+    startPacket()
+    startFile(fileLabel, 'WRITE STRING')
+    addString(string)
+    endFile()
+    endPacket()
+
+def addPictureToSign(fileLabel, dots):
+    startPacket()
+    startFile(files['fileLabel'], 'WRITE SMALL DOT')
+    addDotsPicture(files['fileLabel'], hex(height), hex(width), parseDots(dots))
+    endFile()
+    end()
 
 def parseDots(dots):
     dots = ''
@@ -272,7 +279,7 @@ def updateSign():
     global sqlite
     texts, others =  sqlite.getRegisteredSpaces()
     for text in texts:
-        pass 
+        pass
 
 def startUp(test):
     global sqlite
