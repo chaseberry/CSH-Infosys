@@ -186,7 +186,7 @@ def addDotPicture(fileLabel):
             return jsonify(result='failure', reason='Each row must be ' + str(width) + ' long'), 412  
        
         dots.append(dotRow) 
-        
+       
     if len(dots) != height:
         return jsonify(result='failure', reason='You must have ' + str(height) + ' rows'), 412
 
@@ -195,7 +195,7 @@ def addDotPicture(fileLabel):
     defineMemory() 
     startPacket()
     startFile(files[fileLabel], 'WRITE SMALL DOTS')
-    addDotsPicture(files[fileLabel], hex(height), hex(width), parseDots(dots))
+    addDotsPicture(files[fileLabel], toHex(height), toHex(width), parseDots(dots))
     endFile()
     end()
     #End BetaBrite
@@ -230,11 +230,11 @@ def getSpace(fileLabel):
     return jsonify(result='success', type=space.type, value=space.value)
 
 def parseDots(dots):
-    dots = ''
+    dot = ''
     delim = '\x0D'
     for dotRow in dots:
-        dots += dotRow + delim
-    return dots 
+        dot += dotRow + delim
+    return dot 
 
 def defineMemory():
     global sqlite
@@ -262,13 +262,16 @@ def defineStringMemory(label, string):
     addStringConfig(label, len(string))
 
 def definePictureMemory(label, value):
-    addDotsPictureConfig(label, hex(value['height']), hex(value['width']))
+    addDotsPictureConfig(label, toHex(value['height']), toHex(value['width']))
 
 def parseParams(rawBody):
     try:
         return json.loads(rawBody)
     except ValueError:
         return False
+
+def toHex(num):
+    return ("%x" % num).zfill(2)
 
 def validKey(key):
     global sqlite
