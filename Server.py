@@ -130,7 +130,7 @@ def addTextToServer(fileLabel):
     return jsonify(results='success'), 204
 
 @app.route('/spaces/<int:fileLabel>/picture', methods=['POST'])
-def registerDotPicture(fileLabel):
+def addDotPicture(fileLabel):
     global sqlite
     key = request.headers.get('X-INFOSYS-KEY')
     if not validKey(key):
@@ -176,15 +176,16 @@ def registerDotPicture(fileLabel):
             return jsonify(result='failure', reason='Each row must be ' + str(width) + ' long'), 412  
        
         dots.append(dotRow) 
-        
+       
     if len(dots) != height:
         return jsonify(result='failure', reason='You must have ' + str(height) + ' rows'), 412
 
     sqlite.registerSpaceAsPicture(files[fileLabel], json.dumps({'height':height, 'width':width, 'dots':dots}))
     #Start BetaBrite
     defineMemory() 
-    addPictureToSign(files['fileLabel'], toHex() 
+    addPictureToSign(files['fileLabel'], height, width, dots) 
     #End BetaBrite
+    return jsonify(result='success'),204
 
 @app.route('/spaces/<int:fileLabel>', methods=['GET'])
 def getSpace(fileLabel):
@@ -220,19 +221,19 @@ def addStringToSign(fileLabel, string):
     endFile()
     endPacket()
 
-def addPictureToSign(fileLabel, dots):
+def addPictureToSign(fileLabel, height, width,dots):
     startPacket()
     startFile(files['fileLabel'], 'WRITE SMALL DOT')
-    addDotsPicture(files['fileLabel'], hex(height), hex(width), parseDots(dots))
+    addDotsPicture(files['fileLabel'], toHex(height), toHex(width), parseDots(dots))
     endFile()
     end()
 
 def parseDots(dots):
-    dots = ''
+    dot = ''
     delim = '\x0D'
     for dotRow in dots:
-        dots += dotRow + delim
-    return dots 
+        dot += dotRow + delim
+    return dot 
 
 def defineMemory():
     global sqlite
@@ -260,13 +261,16 @@ def defineStringMemory(label, string):
     addStringConfig(label, len(string))
 
 def definePictureMemory(label, value):
-    addDotsPictureConfig(label, hex(value['height']), hex(value['width']))
+    addDotsPictureConfig(label, toHex(value['height']), toHex(value['width']))
 
 def parseParams(rawBody):
     try:
         return json.loads(rawBody)
     except ValueError:
         return False
+
+def toHex(num):
+    return ("%x" % num).zfill(2)
 
 def validKey(key):
     global sqlite
@@ -293,6 +297,7 @@ def startUp(test):
         app.debug = True
         app.run()
     else:
+        app.debug = True
         app.run(host='0.0.0.0')
 
 if __name__ == "__main__":
