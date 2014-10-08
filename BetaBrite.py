@@ -397,7 +397,7 @@ def addString( text = "" ):
 def addDotsPicture( label, height = "07", width = "50", dots = "" ):
     global packet, branch
     #remember that at least 100 ms must have passed between receiving the width and first row
-    if len(branch) == 2 and branch[ len(branch) - 1 ] == "WRITE SMALL DOTS":
+    if len(branch) == 2 and 'DOTS' in branch[ len(branch) - 1 ]:
         packet +=  height + width + dots
     else:
         raise PacketLevelException('Method called outside of branch restriction.')
