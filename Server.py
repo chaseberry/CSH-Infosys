@@ -283,7 +283,15 @@ def updateSign():
     global sqlite
     texts, others =  sqlite.getRegisteredSpaces()
     for text in texts:
-        pass
+        textData = json.loads(text.value)
+        addTextToSign(text.fileName, textData['texts'], textData['modes']
+
+    for other in others:
+        if other.type = 'STRING':
+            addStringToSign(other.fileName, other.value)
+        elif other.type = 'PICTURE':
+            pictureData = json.loads(other.value)
+            addPictureToSign(other.fileName, pictureData['height'], pictureData['width'], pictureData['dots']) 
 
 def startUp(test):
     global sqlite
