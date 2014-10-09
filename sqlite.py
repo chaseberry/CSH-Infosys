@@ -6,8 +6,10 @@ from BetaBriteSpace import *
 import uuid
 
 class sqlite():
-
+'''A class containing functions to interact with the sqlite db'''
+ 
     def setup(self):
+        '''Sets up the '''
         global Base
         engine = create_engine('sqlite:///BetaBrite.db')
         session = sessionmaker()
