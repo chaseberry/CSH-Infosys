@@ -58,3 +58,7 @@ For a STRING value will be a string
 For a TEXT value will an dictionary of two lists, under texts and modes
 For a PICTURE value will be a height, width, and array of dots
 GET http://infosys.csh.rit.edu/spaces/<spaceId>
+
+Deregistering spaces
+This will remove all spaces associted with the given key.
+DELETE http://infosys.csh.rit.edu/spaces
