@@ -7,7 +7,7 @@ import os
 if __name__ == '__main__':
     if os.path.isfile('BetaBrite.db'):
         os.remove('BetaBrite.db')
-    engine = create_engine('sqlite:///BetaBrite.db')
+    engine = create_engine('sqlite:///BetaBrite.db', connect_args={'check_same_thread':False})
     session = sessionmaker()
     session.configure(bind=engine)
     Base.metadata.create_all(engine)

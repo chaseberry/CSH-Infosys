@@ -11,7 +11,7 @@ class sqlite():
     def setup(self):
         '''Sets up the '''
         global Base
-        engine = create_engine('sqlite:///BetaBrite.db')
+        engine = create_engine('sqlite:///BetaBrite.db', connect_args={'check_same_thread':False})
         session = sessionmaker()
         session.configure(bind=engine)
         Base.metadata.create_all(engine)
