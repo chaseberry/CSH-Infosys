@@ -1,0 +1,30 @@
+Infosys runs on a series of 'files'. Our infosys has about 94 files to store data
+Infosys supports three types of files, TEXT, STRING, and PICTURE
+TEXT files can have text and modes to display.
+TEXT files can also have links to STRING or PICTURE files to display them
+STRING files can only have a single String in them of 125 bytes max.
+PICTURE files will store a height, width, an a 2d array of pixels which are stored as ints from [0-8]
+PICTURE and STRING files can only be displayed if called from within a TEXT file
+
+All requests are made to http://infosys.csh.rit.edu/
+All parameters passed to the api are in the raw body of the request in json format
+The form of requests in this doc will be
+HTTP-METHOD-TYPE URL JSONOBJECT-PARAMETERS
+
+All failures occuring will return the status code of the failure as well as a jsonObject with data about what went wrong
+{"result":"failure", "reason":"<A string with what went wrong>"}
+
+Registering to display data on infosys.
+This will take a number of spaces and register them to a specific infosys-key.
+POST http://infosys.csh.rit.edu/spaces {"count:"<An int giving the server the number of file spaces>}
+returns a JSONObject with {"result":"success", "key":"<The INFOSYS-KEY assigned to these spaces>"}
+
+All requests below require the HTTP-Header of X-INFOSYS-KEY set to the key returned from the registering request
+You request N spaces to display. When making all following requests include a spaceId of [0-(n-1)]
+
+Adding a STRING
+This will take a string and add it to the given spaceId. String must be <125 bytes or they will be truncated
+POST http://infosys.csh.rit.edu/spaces/<spaceId>/string {"string":"<The string to store in this STRING file>"}
+
+Adding a PICTURE
+This will take a width, height, and array of dots.
