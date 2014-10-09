@@ -6,6 +6,8 @@ STRING files can only have a single String in them of 125 bytes max.
 PICTURE files will store a height, width, an a 2d array of pixels which are stored as ints from [0-8]
 PICTURE and STRING files can only be displayed if called from within a TEXT file
 
+STRING files are useful for updating changing information such as time, weather, or reddit/r/gonewild posts
+
 All requests are made to http://infosys.csh.rit.edu/
 All parameters passed to the api are in the raw body of the request in json format
 The form of requests in this doc will be
@@ -20,11 +22,39 @@ POST http://infosys.csh.rit.edu/spaces {"count:"<An int giving the server the nu
 returns a JSONObject with {"result":"success", "key":"<The INFOSYS-KEY assigned to these spaces>"}
 
 All requests below require the HTTP-Header of X-INFOSYS-KEY set to the key returned from the registering request
-You request N spaces to display. When making all following requests include a spaceId of [0-(n-1)]
+You request n spaces to display. When making all following requests include a spaceId of [0-(n-1)]
 
 Adding a STRING
-This will take a string and add it to the given spaceId. String must be <125 bytes or they will be truncated
+This will take a string and add it to the given spaceId. String must be < 125 bytes or they will be truncated
 POST http://infosys.csh.rit.edu/spaces/<spaceId>/string {"string":"<The string to store in this STRING file>"}
 
 Adding a PICTURE
 This will take a width, height, and array of dots.
+Height must be [1-31], width must be [1-255]
+The array of dots must be a string of numbers where each 'dit' is [0-8]
+0” 30H = pixel off “4” 34H = pixel on - dim red
+“1” 31H = pixel on - red “5” 35H = pixel on - dim green
+“2” 32H = pixel on - green “6” 36H = pixel on - brown
+“3” 33H = pixel on - amber “7” 37H = pixel on - orange
+“8” 38H = pixel on - yellow
+*Note our sign is only 7 dots tall
+POST http://infosys.csh.rit.edu/spaces/<spaceId>/picture {"height":<The height of the picture>, "width":<The width of the picutre>, "dots":["<First row of dots>","<Second row of dots>"]}
+
+Adding a TEXT
+This will take a text and a mode or an array of text/modes
+Text must always be specified, mode can be exempt, it will default to HOLD
+TEXT files can display STRING or PICTURE files
+In order to display a STRING file in your text file you use <STRINGFILE:<StringSpace>>
+In order to display a PICTURE file in your text file you use <PICTUREFILE:<PictureSpace>>
+You can have other text and an inclusion of a file in the same text section
+POST http://infosys.csh.rit.edu/spaces/<spaceId>/text {"text":"<Some text to display>", "mode":"<Some mode to display, if not provided will default to HOLD>"}
+POST http://infosys.csh.rit.edu/spaces/<spaceId>/text {"multiText":[{"text":"<Some text to display>"}, {"text":"<Some text to display>", "mode":"<Some mode>"}]}
+
+Getting a space
+This will return the type and value stored at the given spaceId
+Data will be returned as a json object with the keys of result, type, and value
+Type will be TEXT, STRING, or PICTURE
+For a STRING value will be a string
+For a TEXT value will an dictionary of two lists, under texts and modes
+For a PICTURE value will be a height, width, and array of dots
+GET http://infosys.csh.rit.edu/spaces/<spaceId>
