@@ -9,7 +9,7 @@ class sqlite():
 '''A class containing functions to interact with the sqlite db'''
  
     def setup(self):
-        '''Sets up the '''
+        '''Sets up the sqlite DB'''
         global Base
         engine = create_engine('sqlite:///BetaBrite.db', connect_args={'check_same_thread':False})
         session = sessionmaker()
@@ -18,6 +18,8 @@ class sqlite():
         self.sqlSession = session()
 
     def findOpenSpaces(self, maxCount):
+        '''Finds the unused spaces for user registration
+            This will find maxCount files in sequential order. I had a reason for that, I dont remember why'''
         spaces = self.sqlSession.query(BetaBriteSpace).all()
         count = 0
         validSpaces = []
@@ -34,10 +36,11 @@ class sqlite():
         return False;
 
     def registerSpaces(self, maxCount):
-        spaces = self.findOpenSpaces(maxCount)
+        '''Register maxCount spaces to a new user and return the users KEY'''
+        spaces = self.findOpenSpaces(maxCount)#gets the spaces
         if spaces == False:
             return False
-        key = str(uuid.uuid4())
+        key = str(uuid.uuid4())#Generates the key for the user
         user = BetaBriteUser(key=key, fileList=spaces)
         self.sqlSession.add(user)
         for space in spaces:
@@ -48,8 +51,9 @@ class sqlite():
         return key
 
     def registerSpaceAsText(self,  space, value):
+        '''Register the space as a text type'''
         try:
-            space = self.sqlSession.query(BetaBriteSpace).filter_by(fileName=space).one()
+            space = self.sqlSession.query(BetaBriteSpace).filter_by(fileName=space).one()#find a single space
         except Exception:
             return False
         space.type = "TEXT"
@@ -69,6 +73,7 @@ class sqlite():
         return True
 
     def registerSpaceAsPicture(self, space, value):
+        '''Register the space as a string type'''
         try:
             space = self.sqlSession.query(BetaBriteSpace).filter_by(fileName=space).one()
         except Exception:
@@ -80,9 +85,11 @@ class sqlite():
         return True 
 
     def getUsedSpaces(self):
+        '''gets all spaces that don't have a type(these are unsued)'''
         return self.sqlSession.query(BetaBriteSpace).filter(type!=None)
 
     def deleteSpaces(self, userKey):
+        '''removes the spaces registered to a specific key'''
         try:
             user = self.sqlSession.query(BetaBriteUser).filter_by(key=userKey).one()
         except Exception as e:
@@ -100,6 +107,7 @@ class sqlite():
         return True
 
     def getFileLabels(self, userKey):
+        '''Get all file labels from a key'''
         try:
             user = self.sqlSession.query(BetaBriteUser).filter_by(key=userKey).one()
         except Exception as e:
@@ -114,6 +122,7 @@ class sqlite():
         return files
 
     def validUser(self, userKey):
+        '''Finds if the key cooresponds to a valid user'''
         try:
             user = self.sqlSession.query(BetaBriteUser).filter_by(key=userKey).one()
         except Exception:
@@ -121,17 +130,20 @@ class sqlite():
         return True
 
     def getSpace(self, space):
+        '''Gets data stored at a specific space'''
         try:
             return self.sqlSession.query(BetaBriteSpace).filter_by(fileName=space).one()
         except Exception:
             return None
 
     def getTextandOtherSpaces(self):
+        '''Get all spaces that are text. Then all spaces that are String or Picture'''
         text = self.sqlSession.query(BetaBriteSpace).filter_by(type='TEXT')
         other = self.sqlSession.query(BetaBriteSpace).filter(type!='TEXT', type!=None)
         return [text, other]
 
     def getUsers(self):
+        '''Gets all users and returns an array of key to fileList arrays'''
         userList = []
         users = self.sqlSession.query(BetaBriteUser).all()
         for user in users:
