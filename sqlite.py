@@ -77,7 +77,7 @@ class sqlite():
         self.sqlSession.commit()
         return True 
 
-    def getRegisteredSpaces(self):
+    def getUsedSpaces(self):
         return self.sqlSession.query(BetaBriteSpace).filter(type!=None)
 
     def deleteSpaces(self, userKey):
@@ -92,7 +92,8 @@ class sqlite():
         for space in spaces:
             space.inUse = False
             space.userId = None
-
+            space.type = None
+            space.value = None
         self.sqlSession.commit()
         return True
 
