@@ -6,7 +6,7 @@ from BetaBriteSpace import *
 import uuid
 
 class sqlite():
-'''A class containing functions to interact with the sqlite db'''
+    '''A class containing functions to interact with the sqlite db'''
  
     def setup(self):
         '''Sets up the sqlite DB'''

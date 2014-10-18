@@ -8,7 +8,7 @@ PICTURE and STRING files can only be displayed if called from within a TEXT file
 
 STRING files are useful for updating changing information such as time, weather, or reddit/r/gonewild posts
 
-All requests are made to http://infosys.csh.rit.edu/
+All requests are made to http://infosys.csh.rit.edu:5000/
 All parameters passed to the api are in the raw body of the request in json format
 The form of requests in this doc will be
 HTTP-METHOD-TYPE URL JSONOBJECT-PARAMETERS
