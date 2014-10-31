@@ -11,6 +11,10 @@ import re
 
 app = Flask(__name__)
 
+@app.errorhandler(404)
+def url_not_found(e):
+    return jsonify(result='failure', reason='URL not found. Please make sure your url is correct and your space is a number')
+
 @app.route('/spaces', methods=['POST'])
 def requestFiles():
     '''The url to request spaces. '''
