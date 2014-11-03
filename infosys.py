@@ -2,6 +2,7 @@ import requests
 import sys
 import argparse
 import json
+
 class infosys():
 
     def __init__(self, key=None):
@@ -100,9 +101,21 @@ def printMenu():
     print('|| m - post multi texts    ||')
     print('|| g - get saved data      ||')
     print('|| d - delete your key     ||')
+    print('|| a - list display modes  ||')
     print('|| h - show this menu      ||')
     print('|| q - quit                ||')
     print('=============================')
+
+def displayModes():
+    print('Valid display modes are')
+    print('HOLD, FLASH, ROLL UP, ROLL DOWN, ROLL LEFT, ROLL RIGHT')
+    print('WIPE UP, WIPE DOWN, WIPE LEFT, WIPE RIGHT, SCROLL')
+    print('AUTOMODE, ROLL IN, ROLL OUT, WIPE IN, WIPE OUT')
+    print('COMPRESSED, EXPLODE, CLOCK, TWINKLE, SPARKLE, SNOW')
+    print('INTERLOCK, SWITCH, SLIDE, SPRAY, STARBURST, WELCOME')
+    print('SLOT MACHINE, NEWS FLASH, TRUMPET, CYCLE COLORS')
+    print('THANK YOU, NO SMOKING, DONT DRINK AND DRIVE, RUNNING ANNIMALS OR FISH')
+    print('FIREWORKS, BALLOON, CHERRY BOMB')
 
 #methods for dict
 
@@ -187,7 +200,8 @@ if __name__ == '__main__':
         's' : addString,
         'p' : addPicture,
         'd' : deleteKey,
-        'm' : addMultiText
+        'm' : addMultiText,
+        'a' : displayModes
         }
     
     printMenu()
