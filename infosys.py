@@ -132,7 +132,7 @@ def addPicture():
     rowCount = 1
     dots = []
     while True:
-        row = raw_input('Dots for row ' + rowCount + ': ')
+        row = raw_input('Dots for row ' + str(rowCount) + ': ')
         if row == '-1':
             break
         dots.append(row)
@@ -169,4 +169,8 @@ if __name__ == '__main__':
             print('\'' + choice + '\' is not a valid command. Type h to see more')
             continue
 
-        commands[choice]()
+        try:
+            commands[choice]()
+        except Exception as e:
+            print('Exception occured')
+            print(e)
