@@ -4,7 +4,6 @@ import argparse
 import json
 class infosys():
 
-
     def __init__(self, key=None):
         self.key = key
         self.url = 'http://infosys.csh.rit.edu:5000/'
@@ -21,7 +20,6 @@ class infosys():
             return (False, 'There is already a key for this session')
         response = requests.post(self.url + 'spaces', data=json.dumps({'count':count}))
         jsonResponse = response.json()
-        print(jsonResponse)
         if response.status_code == 200:
             self.key=jsonResponse['userKey']
             return (True, jsonResponse['userKey'])
@@ -45,8 +43,6 @@ class infosys():
 
     @hasInfosysKey
     def addPicture(self, space, dots):
-        if self.key == None:
-            return(False, 'There is no infosys key for this session')
         try:
             width = len(dots[0])
             height = len(dots)
@@ -62,8 +58,6 @@ class infosys():
 
     @hasInfosysKey
     def addMultiText(self, space, textArray, modeArray):
-        if self.key == None:
-            return(False, 'There is no infosys key for this session')
         texts = []
         for z in range(len(textArray)):
             mode = 'HOLD'
@@ -113,6 +107,40 @@ def registerSpaces():
     count = raw_input('How many slots do you wants? ')
     response = infosys.registerSpaces(count)
     print(response)
+
+def addText():
+    space = raw_input('Add a TEXT to what space? ')
+    text = raw_input('The TEXT: ')
+    if raw_input('Add a display mode? (y/n)') == 'y':
+        mode = raw_input('MODE? ')
+        response = infosys.addText(space, text, mode)
+    else:
+        response = infosys.addText(space, text)
+
+    print(response)
+
+def addString():
+    space = raw_input('Add a STRING to what space? ')
+    string = raw_input('The STRING: ')
+    response = infosys.addString(space, string)
+    print(response)
+
+def addPicture():
+    space = raw_input('Add a picture to what space? ')
+    print('Please make your picture have a consistant height and width')
+    print('Valid colors are 1-8, 0 is off, -1 is quit')
+    rowCount = 1
+    dots = []
+    while True:
+        row = raw_input('Dots for row ' + rowCount + ': ')
+        if row == '-1':
+            break
+        dots.append(row)
+        rowCount += 1
+
+    response = infosys.addPicture(space, dots)
+    print(response)
+    
 #end dict methods
 
 if __name__ == '__main__':
@@ -120,19 +148,25 @@ if __name__ == '__main__':
     parser.add_argument('-k', '--key', help = 'An infosys key')
     args = parser.parse_args()
     infosys = infosys(args.key)
+    
+    commands = {
+        'h' : printMenu,
+        'r' : registerSpaces,
+        'g' : getData,
+        't' : addText,
+        's' : addString,
+        'p' : addPicture,
+        }
+    
     printMenu()
     while True:
         choice = raw_input('What do you want to do? ')
         
         if choice == 'q':
             sys.exit()
+      
+        if not choice in commands:
+            print('\'' + choice + '\' is not a valid command. Type h to see more')
+            continue
 
-        elif choice == 'r' and infosys.hasKey():
-            print('You already have a key in this session!')
-       
-        elif choice == 'g':
-            getData()  
-            
-        elif choice == 'r':
-            registerSpaces() 
-        
+        commands[choice]()
