@@ -83,10 +83,10 @@ class infosys():
     @hasInfosysKey
     def deleteKey(self):
         response = requests.delete(self.url + 'spaces', headers={'X-INFOSYS-KEY' : self.key})
-        jsonResponse = response.json()
         if response.status_code >= 200 and response.status_code <= 299:
-            return(True, jsonResponse)
-        return(False, jsonResponse)
+            self.key = None
+            return (True, {u'result' : u'success'})
+        return (False, {u'result' : u'failure'})
 
     def hasKey(self):
         return not self.key == None
