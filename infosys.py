@@ -148,7 +148,11 @@ def addPicture():
 
     response = infosys.addPicture(space, dots)
     print(response)
-    
+
+def deleteKey():
+    response = infosys.deleteKey()
+    print(response)
+
 #end dict methods
 
 if __name__ == '__main__':
@@ -164,6 +168,7 @@ if __name__ == '__main__':
         't' : addText,
         's' : addString,
         'p' : addPicture,
+        'd' : deleteKey
         }
     
     printMenu()
