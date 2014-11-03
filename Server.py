@@ -10,6 +10,7 @@ import time
 import re
 
 app = Flask(__name__)
+''' Start with sudo nohup python Server.py & '''
 
 @app.errorhandler(404)
 def url_not_found(e):
