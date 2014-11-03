@@ -31,9 +31,9 @@ def requestFiles():
     registration = sqlite.registerSpaces(count)#register count spaces to a specific key
 
     if registration == False:
-        return jsonify(results='failure', reason='Count is either too large or there is no space. Talk to an admin'), 412
+        return jsonify(result='failure', reason='Count is either too large or there is no space. Talk to an admin'), 412
    
-    return jsonify(results='success', userKey=registration), 200 #return the userKey + a 200
+    return jsonify(result='success', userKey=registration), 200 #return the userKey + a 200
      
 
 @app.route('/spaces', methods=['DELETE'])
@@ -44,6 +44,11 @@ def deleteFiles():
     if not validKey(key):
         return noKey()
     deleted = sqlite.deleteSpaces(key)
+    
+    clearMemoryConfig()
+    time.sleep(.1)
+    updateSign()
+
     return jsonify(result='success'), 204
 
 @app.route('/spaces/<int:fileLabel>/string', methods=['POST'])
