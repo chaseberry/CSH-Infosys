@@ -65,9 +65,9 @@ class infosys():
                 mode = modeArray[z]
             texts.append({'text' : textArray[z], 'mode' : mode})
 
-        response = requests.post(self.url + 'spaces/' + space + '/text', data=json.dumps({'multi' : texts}), headers={'X-INFOSYS-KEY':self.key})
+        response = requests.post(self.url + 'spaces/' + space + '/text', data=json.dumps({'multiText' : texts}), headers={'X-INFOSYS-KEY':self.key})
         if response.status_code >= 200 and response.status_code <= 299:
-            return (True, 'Picture added')
+            return (True, 'Texts added')
 
         jsonResponse = response.json()
         return (False, jsonResponse)
@@ -149,6 +149,24 @@ def addPicture():
     response = infosys.addPicture(space, dots)
     print(response)
 
+def addMultiText():
+    space = raw_input('Add texts to what spaces? ')
+    texts = []
+    modes = []
+    while True:
+        text = raw_input('The TEXT (-1 to quite): ')
+        if text == '-1':
+            break;
+        if raw_input('Add a display MODE? (y/n) ') == 'y':
+            mode = raw_input('The display MODE: ')
+            modes.append(mode)
+        else:
+            modes.append('HOLD')
+        texts.append(text)
+   
+    response = infosys.addMultiText(space, texts, modes)
+    print(response) 
+
 def deleteKey():
     response = infosys.deleteKey()
     print(response)
@@ -168,7 +186,8 @@ if __name__ == '__main__':
         't' : addText,
         's' : addString,
         'p' : addPicture,
-        'd' : deleteKey
+        'd' : deleteKey,
+        'm' : addMultiText
         }
     
     printMenu()
