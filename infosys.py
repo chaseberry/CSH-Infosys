@@ -47,7 +47,7 @@ class infosys():
             width = len(dots[0])
             height = len(dots)
         except Exception:
-            return (False, 'Dots is not a list of lists')
+            return (False, 'Dots is not a list of strings')
 
         response = requests.post(self.url + 'spaces/' + space + '/picture', data=json.dumps({'height' : height, 'width' : width, 'dots' : dots}), headers={'X-INFOSYS-KEY':self.key})
         if response.status_code >= 200 and response.status_code <= 299:
@@ -77,6 +77,14 @@ class infosys():
         response = requests.get(self.url + 'spaces/' + space, headers={'X-INFOSYS-KEY' : self.key})
         jsonResponse = response.json()
         if response.status_code >= 200 and response.status_code <=299:
+            return(True, jsonResponse)
+        return(False, jsonResponse)
+
+    @hasInfosysKey
+    def deleteKey(self):
+        response = requests.delete(self.url + 'spaces', headers={'X-INFOSYS-KEY' : self.key})
+        jsonResponse = response.json()
+        if response.status_code >= 200 and response.status_code <= 299:
             return(True, jsonResponse)
         return(False, jsonResponse)
 
