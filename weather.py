@@ -2,11 +2,11 @@ from infosys import infosys
 import requests
 import argparse
 
-cityId = '5137454'
+cityId = '5137454' #Scottsville weather
 
 url = 'http://api.openweathermap.org/data/2.5/weather?id=' + cityId
 
-infosysKey = 'fe3e9d5c-8068-42d5-835c-5f01eaf0271a'
+infosysKey = 'fe3e9d5c-8068-42d5-835c-5f01eaf0271a' #this key requires 6 spaces 
 
 def currentWeather():
     global url, infosysKey
@@ -29,7 +29,7 @@ def setup():
     global infosysKey
     info = infosys(infosysKey)
     info.addMultiText(0, ['Current Weather', '<STRINGFILE:5>  <STRINGFILE:2><PICTUREFILE:1>F  <STRINGFILE:3>% Humidity  Wind <STRINGFILE:4> MPH'], ['SNOW', 'ROTATE'])
-    info.addPicture(1, ['0110', '1001', '1001', '0110', '0000', '0000', '0000'])
+    info.addPicture(1, ['010', '101', '010', '000', '000', '000', '000'])
 
 def convertKelvinToF(temp):
     return ((temp - 273.15) * 1.8)  + 32
