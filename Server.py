@@ -47,7 +47,7 @@ def deleteFiles():
     deleted = sqlite.deleteSpaces(key)
     
     clearMemoryConfig()
-    time.sleep(.5)
+    time.sleep(.1)
     updateSign()
 
     return jsonify(result='success'), 204
@@ -251,6 +251,7 @@ def addTextToSign(fileLabel, texts, modes):
     
     endFile()#ends file
     endPacket()#ends and sends file
+    time.sleep(.1)
 
 def addStringToSign(fileLabel, string):
     '''Adds a string to a a stringfile'''
@@ -260,6 +261,7 @@ def addStringToSign(fileLabel, string):
     addString(string)
     endFile()
     endPacket()
+    time.sleep(.1)
 
 def addPictureToSign(fileLabel, height, width, dots):
     '''Adds a picture to a picture file'''
@@ -269,6 +271,7 @@ def addPictureToSign(fileLabel, height, width, dots):
     addDotsPicture(fileLabel, toHex(height), toHex(width), parseDots(dots))#Adds the height, width, and dots to the file
     endFile()
     end()
+    time.sleep(.1)
 
 def parseDots(dots):
     '''Takes an array of dots(where each is a string) and builds the string with <CR>s to send to the sign'''
