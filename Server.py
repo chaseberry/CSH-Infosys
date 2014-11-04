@@ -47,7 +47,7 @@ def deleteFiles():
     deleted = sqlite.deleteSpaces(key)
     
     clearMemoryConfig()
-    time.sleep(.1)
+    time.sleep(.5)
     updateSign()
 
     return jsonify(result='success'), 204
