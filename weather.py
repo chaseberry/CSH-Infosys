@@ -28,7 +28,7 @@ def currentWeather():
 def setUp():
     global infosysKey
     info = infosys(infosysKey)
-    info.addMultiText(0, ['Current Weather', '<STRINGFILE:5>', '<STRINGFILE:2><PICTUREFILE:1>F', '<STRINGFILE:3>% humidity', 'Wind <STRINGFILE:4> mph'], ['SNOW', 'ROTATE', 'ROTATE', 'ROTATE', 'ROTATE'])
+    info.addMultiText(0, ['Current Weather', '<STRINGFILE:5> <STRINGFILE:2><PICTUREFILE:1>F <STRINGFILE:3>% Humidity Wind <STRINGFILE:4> MPH'], ['SNOW', 'ROTATE'])
     info.addPicture(1, ['0110', '1001', '1001', '0110', '0000', '0000', '0000'])
 
 def convertKelvinToF(temp):
