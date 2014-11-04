@@ -235,6 +235,12 @@ def getSpace(fileLabel):
     
     return jsonify(result='success', type=space.type, value=space.value)#Note if the type is a TEXT or a PICTURE the data returned is JSON
 
+@app.route('/reboot', methods=['PUT'])
+def rebootSign():
+    clearMemoryConfig()
+    time.sleep(.1)
+    updateSign() 
+
 def addTextToSign(fileLabel, texts, modes):
     '''Add an array of texts and modes to the sign'''
     clear()
