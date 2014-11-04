@@ -239,7 +239,8 @@ def getSpace(fileLabel):
 def rebootSign():
     clearMemoryConfig()
     time.sleep(.1)
-    updateSign() 
+    updateSign()
+    return jsonify(result = 'success'), 204
 
 def addTextToSign(fileLabel, texts, modes):
     '''Add an array of texts and modes to the sign'''
