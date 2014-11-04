@@ -1,87 +1,43 @@
-#!/usr/bin/env python2
+from infosys import infosys
+import requests
+import argparse
 
-#weather.py
-#Original author: M. Thomas Schellenberg ( mt86@csh.rit.edu )
-#Current maintainer: Josh McSavaney ( mcsaucy@csh.rit.edu )
-#A script used to scrape and parse weather information
+cityId = '5137454'
 
-import urllib, re, xmlrpclib, lastupdated, time
- 
-# get the file from the site
-file = urllib.urlopen('http://www.weather.gov/data/current_obs/KROC.xml')
+url = 'http://api.openweathermap.org/data/2.5/weather?id=' + cityId
 
-# make the file into a string
-data = file.read()
+infosysKey = 'fe3e9d5c-8068-42d5-835c-5f01eaf0271a'
 
-WTHR_HEADER = "94"
-WTHR_FILE = "12"
-TEMP_FILE = "13"
-WIND_FILE = "14"
+def currentWeather():
+    global url, infosysKey
+    response = requests.get(url)
+    if response.status_code == 200:
+        json = response.json()
+    
+        info = infosys(infosysKey)
+        
+        temp = convertKelvinToF(json['main']['temp'])#space 2
+        humidity = json['main']['humidity']#space 3
+        windSpeed = json['wind']['speed']#space 4
+        condition = json['weather'][0]['description']#space 5 
+        info.addString(2, temp)
+        info.addString(3, humidity)
+        info.addString(4, windSpeed)
+        info.addString(5, condition)
 
-weather = "Not Available"
-temp = "Not Available"
-windchill = "Not Available"
+def setUp():
+    global infosysKey
+    info = infosys(infosysKey)
+    info.addMultiText(0, ['Current Weather', '<STRINGFILE:5>', '<STRINGFILE:2><PICTUREFILE:1>F', '<STRINGFILE:3>% humidity', 'Wind <STRINGFILE:4> mph'], ['SNOW', 'ROTATE', 'ROTATE', 'ROTATE', 'ROTATE'])
+    info.addPicture(1, ['0110', '1001', '1001', '0110', '0000', '0000', '0000'])
 
-# search the file for the observation time and store the string
-#re1 = re.search(r'<observation_time>(.*?)</observation_time>', data)
-#obs = re1.group(1)
-#################### BEING CHANGED TO REFLECT WHEN LAST CHANGE WAS MADE TO INFOSYS
+def convertKelvinToF(temp):
+    return ((temp - 273.15) * 1.8)  + 32
 
-# search the file for the weather and store the string
-try:
-    re2 = re.search(r'<weather>(.*?)</weather>', data)
-    weather = re2.group(1)
-except (AttributeError):
-    pass
-
-# search the file for the temp and store the string
-try:
-    re3 = re.search(r'<temperature_string>(.*?)</temperature_string>', data)
-    temp = re3.group(1)
-except (AttributeError):
-    pass
-
-# search the file for the wind and store the string
-try:
-    re4 = re.search(r'<wind_string>(.*?)</wind_string>', data)
-    windchill = re4.group(1)
-except (AttributeError):
-    pass
-
-flash = False
-# add the weather to little infosys (see the wiki for more details)
-server = xmlrpclib.ServerProxy("http://infosys.csh.rit.edu:8080")
-
-if not server.fileExists(WTHR_HEADER):
-    server.delFile(WTHR_HEADER)
-    server.addFile(WTHR_HEADER)
-    flash = True
-
-    server.addText(WTHR_HEADER, "ROTATE", "Current Weather Conditions:")
-    server.addText(WTHR_HEADER, "HOLD", " %" + WTHR_FILE, WTHR_FILE)
-    server.addText(WTHR_HEADER, "ROTATE", "Current Temperature:")
-    server.addText(WTHR_HEADER, "HOLD", " %" + TEMP_FILE, TEMP_FILE)
-    server.addText(WTHR_HEADER, "ROTATE", "Current Wind:")
-    server.addText(WTHR_HEADER, "HOLD", " %" + WIND_FILE, WIND_FILE)
-
-if not server.fileExists(WTHR_FILE):
-    server.delFile(WTHR_FILE)
-    server.addFile(WTHR_FILE)
-    flash = True
-if not server.fileExists(TEMP_FILE):
-    server.delFile(TEMP_FILE)
-    server.addFile(TEMP_FILE)
-    flash = True
-if not server.fileExists(WIND_FILE):
-    server.delFile(WIND_FILE)
-    server.addFile(WIND_FILE)
-    flash = True
-
-server.addString(WTHR_FILE, weather)
-server.addString(TEMP_FILE, temp)
-server.addString(WIND_FILE, windchill)
-
-flash = lastupdated.getTime() or flash
-if flash:
-    time.sleep(1)
-    server.updateSign()
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='InfoSys weather script')
+    parser.add_argument('-s', '--setup', help = 'Run the setup', action='store_true')
+    args = parser.parse_args()
+    if args.setup:
+        setUp()
+    currentWeather()
