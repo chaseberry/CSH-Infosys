@@ -86,7 +86,8 @@ class sqlite():
 
     def getUsedSpaces(self):
         '''gets all spaces that don't have a type(these are unsued)'''
-        return self.sqlSession.query(BetaBriteSpace).filter(type!=None)
+        query = self.sqlSession.query(BetaBriteSpace).filter(BetaBriteSpace.type != None)
+        return query
 
     def deleteSpaces(self, userKey):
         '''removes the spaces registered to a specific key'''
@@ -139,7 +140,7 @@ class sqlite():
     def getTextandOtherSpaces(self):
         '''Get all spaces that are text. Then all spaces that are String or Picture'''
         text = self.sqlSession.query(BetaBriteSpace).filter_by(type='TEXT')
-        other = self.sqlSession.query(BetaBriteSpace).filter(type!='TEXT', type!=None)
+        other = self.sqlSession.query(BetaBriteSpace).filter(type != 'TEXT', type != None)
         return [text, other]
 
     def getUsers(self):
@@ -151,9 +152,12 @@ class sqlite():
             for space in user.fileList:
                 files.append(space.fileName)
             userList.append('key: ' + user.key + '   spaces:' + str(files))
-
         return userList
+
 if __name__ == '__main__':
     sqlite = sqlite()
     sqlite.setup()
     print(sqlite.getUsers())
+    spaces = sqlite.getUsedSpaces()
+    for space in spaces:
+        print(space.__dict__)
