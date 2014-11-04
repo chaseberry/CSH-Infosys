@@ -293,14 +293,14 @@ def defineMemory():
     texts = spaces[0]
     others = spaces[1]
     for text in texts:
-        text = json.loads(space.value)#load the text value from the space as json
-        defineTextMemory(space.fileName, text['modes'], text['texts'])#adds the textMemory to the packet
+        textValue = json.loads(text.value)#load the text value from the space as json
+        defineTextMemory(text.fileName, textValue['modes'], textValue['texts'])#adds the textMemory to the packet
 
     for other in others:
         if other.type == 'STRING':
-            defineStringMemory(space.fileName, space.value)#adds the stringMemory to the packet
+            defineStringMemory(other.fileName, other.value)#adds the stringMemory to the packet
         elif other.type == 'PICTURE':
-            definePictureMemory(space.fileName, json.loads(space.value))#adds the pictureMemory to the packet 
+            definePictureMemory(other.fileName, json.loads(other.value))#adds the pictureMemory to the packet 
             
     end()
     time.sleep(.1)#You need a delay between packets to keep the sign from crashing
