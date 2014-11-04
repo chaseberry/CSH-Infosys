@@ -20,6 +20,9 @@ def currentWeather():
         humidity = json['main']['humidity']#space 3
         windSpeed = json['wind']['speed']#space 4
         condition = json['weather'][0]['description']#space 5 
+        
+        temp = round(temp, 2)
+        
         info.addString(2, temp)
         info.addString(3, humidity)
         info.addString(4, windSpeed)
