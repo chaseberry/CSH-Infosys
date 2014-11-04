@@ -28,7 +28,7 @@ class infosys():
 
     @hasInfosysKey
     def addText(self, space, text, mode='HOLD'):
-        response = requests.post(self.url + 'spaces/' + space + '/text', data=json.dumps({'text':text, 'mode':mode}), headers={'X-INFOSYS-KEY':self.key})
+        response = requests.post(self.url + 'spaces/' + str(space) + '/text', data=json.dumps({'text': str(text), 'mode':mode}), headers={'X-INFOSYS-KEY':self.key})
         if response.status_code >= 200 and response.status_code <= 299:
             return (True, 'Text added')
         jsonResponse = response.json()
@@ -36,7 +36,7 @@ class infosys():
    
     @hasInfosysKey 
     def addString(self, space, string):
-        response = requests.post(self.url + 'spaces/' + space + '/string', data=json.dumps({'string' : string}), headers={'X-INFOSYS-KEY':self.key})
+        response = requests.post(self.url + 'spaces/' + str(space) + '/string', data=json.dumps({'string' : str(string)}), headers={'X-INFOSYS-KEY':self.key})
         if response.status_code >= 200 and response.status_code <= 299:
             return (True, 'String added')
         jsonResponse = response.json()
@@ -50,7 +50,7 @@ class infosys():
         except Exception:
             return (False, 'Dots is not a list of strings')
 
-        response = requests.post(self.url + 'spaces/' + space + '/picture', data=json.dumps({'height' : height, 'width' : width, 'dots' : dots}), headers={'X-INFOSYS-KEY':self.key})
+        response = requests.post(self.url + 'spaces/' + str(space) + '/picture', data=json.dumps({'height' : height, 'width' : width, 'dots' : dots}), headers={'X-INFOSYS-KEY':self.key})
         if response.status_code >= 200 and response.status_code <= 299:
             return (True, 'Picture added')
 
@@ -62,11 +62,11 @@ class infosys():
         texts = []
         for z in range(len(textArray)):
             mode = 'HOLD'
-            if modeArray[z]:
+            if z < len(modeArray) and modeArray[z]:
                 mode = modeArray[z]
-            texts.append({'text' : textArray[z], 'mode' : mode})
+            texts.append({'text' : str(textArray[z]), 'mode' : mode})
 
-        response = requests.post(self.url + 'spaces/' + space + '/text', data=json.dumps({'multiText' : texts}), headers={'X-INFOSYS-KEY':self.key})
+        response = requests.post(self.url + 'spaces/' + str(space) + '/text', data=json.dumps({'multiText' : texts}), headers={'X-INFOSYS-KEY':self.key})
         if response.status_code >= 200 and response.status_code <= 299:
             return (True, 'Texts added')
 
@@ -75,7 +75,7 @@ class infosys():
 
     @hasInfosysKey
     def getData(self, space):
-        response = requests.get(self.url + 'spaces/' + space, headers={'X-INFOSYS-KEY' : self.key})
+        response = requests.get(self.url + 'spaces/' + str(space), headers={'X-INFOSYS-KEY' : self.key})
         jsonResponse = response.json()
         if response.status_code >= 200 and response.status_code <=299:
             return(True, jsonResponse)
