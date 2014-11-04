@@ -285,18 +285,23 @@ def parseDots(dots):
 def defineMemory():
     '''Sends all memory configs to the sign in one GIANT packet'''
     global sqlite
-    spaces =  sqlite.getUsedSpaces()#Gets all spaces with users and TYPEs != None
+    spaces =  sqlite.getTextAndOtherSpaces()#Gets all spaces with users and TYPEs != None
     startPacket()
     startSpecialFunction()
     startMemoryConfig()
-    for space in spaces:
-        if space.type == 'TEXT':
-            text = json.loads(space.value)#load the text value from the space as json
-            defineTextMemory(space.fileName, text['modes'], text['texts'])#adds the textMemory to the packet
-        elif space.type == 'STRING':
+   
+    texts = spaces[0]
+    others = spaces[1]
+    for text in texts:
+        text = json.loads(space.value)#load the text value from the space as json
+        defineTextMemory(space.fileName, text['modes'], text['texts'])#adds the textMemory to the packet
+
+    for other in others:
+        if other.type == 'STRING':
             defineStringMemory(space.fileName, space.value)#adds the stringMemory to the packet
-        elif space.type == 'PICTURE':
-            definePictureMemory(space.fileName, json.loads(space.value))#adds the pictureMemory to the packet
+        elif other.type == 'PICTURE':
+            definePictureMemory(space.fileName, json.loads(space.value))#adds the pictureMemory to the packet 
+            
     end()
     time.sleep(.1)#You need a delay between packets to keep the sign from crashing
 
