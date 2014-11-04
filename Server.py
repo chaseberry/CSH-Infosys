@@ -128,22 +128,30 @@ def addTextToServer(fileLabel):
     '''Regex matching for the specific files. Will replace the regexes and fileLabels with the correct transfercode and FILELABEL'''
     for z in range(len(texts)):
         match = re.search(stringRegex, texts[z])
-        if match:
+        
+        while match != None:
             fileNum = int(match.group(1))
             if fileNum >= 0 and fileNum < len(files):
-                texts[z] = re.sub(stringRegex, '\x10' + FILE_LABELS[files[fileNum]], texts[z])
+                texts[z] = re.sub(stringRegex, '\x10' + FILE_LABELS[files[fileNum]], texts[z], 1)
+            else:
+                return jsonify(result='failure', reason='Invalid space given for <STRINGFILE:#>'), 409
+            match = re.search(stringRegex, texts[z])
+
         match = re.search(pictureRegex, texts[z])
-        if match:
+        while match:
             fileNum = int(match.group(1))
             if fileNum >=0 and fileNum < len(files):
-                texts[z] = re.sub(pictureRegex, '\x14' + FILE_LABELS[files[fileNum]], texts[z])
+                texts[z] = re.sub(pictureRegex, '\x14' + FILE_LABELS[files[fileNum]], texts[z], 1)
+            else:
+                return jsonify(result='failure', reason='Invalid space given for <STRINGFILE:#>'), 409
+            match = re.search(pictureRegex, texts[z])
 
     sqlite.registerSpaceAsText(files[fileLabel], json.dumps({'texts':texts, 'modes':modes}))#Register the space as a Text start. Value is stored as json
     #Start BetaBrite
     defineMemory()
     addTextToSign(files[fileLabel], texts, modes) 
     #End BetaBrite
-    return jsonify(results='success'), 204
+    return jsonify(result='success'), 204
 
 @app.route('/spaces/<int:fileLabel>/picture', methods=['POST'])
 def addDotPicture(fileLabel):
