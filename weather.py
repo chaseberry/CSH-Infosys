@@ -25,10 +25,10 @@ def currentWeather():
         info.addString(4, windSpeed)
         info.addString(5, condition)
 
-def setUp():
+def setup():
     global infosysKey
     info = infosys(infosysKey)
-    info.addMultiText(0, ['Current Weather', '<STRINGFILE:5> <STRINGFILE:2><PICTUREFILE:1>F <STRINGFILE:3>% Humidity Wind <STRINGFILE:4> MPH'], ['SNOW', 'ROTATE'])
+    info.addMultiText(0, ['Current Weather', '<STRINGFILE:5>  <STRINGFILE:2><PICTUREFILE:1>F  <STRINGFILE:3>% Humidity  Wind <STRINGFILE:4> MPH'], ['SNOW', 'ROTATE'])
     info.addPicture(1, ['0110', '1001', '1001', '0110', '0000', '0000', '0000'])
 
 def convertKelvinToF(temp):
@@ -39,5 +39,5 @@ if __name__ == '__main__':
     parser.add_argument('-s', '--setup', help = 'Run the setup', action='store_true')
     args = parser.parse_args()
     if args.setup:
-        setUp()
+        setup()
     currentWeather()
