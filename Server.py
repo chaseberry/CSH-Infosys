@@ -344,7 +344,7 @@ def updateSign():
         Finds all spaces with TEXT and loads them to the sigh. Then loads the String and Picture files to the sign'''
     global sqlite
     defineMemory()
-    spaces =  sqlite.getTextandOtherSpaces()#gets the text and not-text spaces
+    spaces =  sqlite.getTextAndOtherSpaces()#gets the text and not-text spaces
     texts = spaces[0]
     others = spaces[1]
     for text in texts:

@@ -137,7 +137,7 @@ class sqlite():
         except Exception:
             return None
 
-    def getTextandOtherSpaces(self):
+    def getTextAndOtherSpaces(self):
         '''Get all spaces that are text. Then all spaces that are String or Picture'''
         text = self.sqlSession.query(BetaBriteSpace).filter_by(type='TEXT')
         other = self.sqlSession.query(BetaBriteSpace).filter(type != 'TEXT', type != None)
