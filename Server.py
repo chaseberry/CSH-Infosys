@@ -246,7 +246,7 @@ def addTextToSign(fileLabel, texts, modes):
     '''Add an array of texts and modes to the sign'''
     clear()
     startPacket()#starts the packet
-    startFile(fileLabel)#starts the file at the given file label
+    startFile(fileLabel, 'WRITE TEXT')#starts the file at the given file label
     for z in range(len(texts)):
         addText(texts[z], modes[z])#adds the given text/mode objects to the sign
     
@@ -292,16 +292,17 @@ def defineMemory():
    
     texts = spaces[0]
     others = spaces[1]
-    for text in texts:
-        textValue = json.loads(text.value)#load the text value from the space as json
-        defineTextMemory(text.fileName, textValue['modes'], textValue['texts'])#adds the textMemory to the packet
-
     for other in others:
         if other.type == 'STRING':
             defineStringMemory(other.fileName, other.value)#adds the stringMemory to the packet
         elif other.type == 'PICTURE':
             definePictureMemory(other.fileName, json.loads(other.value))#adds the pictureMemory to the packet 
-            
+    
+    for text in texts:
+        textValue = json.loads(text.value)#load the text value from the space as json
+        defineTextMemory(text.fileName, textValue['modes'], textValue['texts'])#adds the textMemory to the packet
+
+        
     end()
     time.sleep(.1)#You need a delay between packets to keep the sign from crashing
 
