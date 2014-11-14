@@ -148,8 +148,7 @@ def addTextToServer(fileLabel):
 
     sqlite.registerSpaceAsText(files[fileLabel], json.dumps({'texts':texts, 'modes':modes}))#Register the space as a Text start. Value is stored as json
     #Start BetaBrite
-    defineMemory()
-    addTextToSign(files[fileLabel], texts, modes) 
+    updateSign()
     #End BetaBrite
     return jsonify(result='success'), 204
 
