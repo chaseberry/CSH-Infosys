@@ -19,7 +19,7 @@ def currentWeather():
         temp = convertKelvinToF(json['main']['temp'])#space 2
         humidity = json['main']['humidity']#space 3
         windSpeed = json['wind']['speed']#space 4
-        condition = json['weather'][0]['description']#space 5 
+        condition = json['weather'][0]['description'].title()#space 5 
         
         temp = round(temp, 2)
         
@@ -31,7 +31,7 @@ def currentWeather():
 def setup():
     global infosysKey
     info = infosys(infosysKey)
-    info.addMultiText(0, ['Current Weather', '<STRINGFILE:5>  <STRINGFILE:2><PICTUREFILE:1>F  <STRINGFILE:3>% Humidity  Wind <STRINGFILE:4> MPH'], ['SNOW', 'ROTATE'])
+    info.addMultiText(0, ['Weather', '<STRINGFILE:5>  <STRINGFILE:2><PICTUREFILE:1>F  <STRINGFILE:3>% Humidity  Wind <STRINGFILE:4> MPH'], ['SNOW', 'ROTATE'])
     info.addPicture(1, ['010', '101', '010', '000', '000', '000', '000'])
 
 def convertKelvinToF(temp):
