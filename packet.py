@@ -58,6 +58,8 @@ class packet():
         'ALPHAPREMIERE 9000 SIGN': "\x78",
         'TEMPERATURE PROBE': "\x79",
         'ALL SIGNS WITH MEMORY CONFIGURED FOR 26 FILES': "\x7A" }
+      
+    TIME_DELAY = '<TIME_DELAY>'
        
     '''End constants'''
 
@@ -74,10 +76,11 @@ class packet():
             self.signType = signType
 
     def addCommand(self, command):
-        pass
+        self.commands.append(command)
 
     def construct(self):
-        pass
-
+        for command in commands:
+            command.construct()
+    
     def send(self):
         pass 
