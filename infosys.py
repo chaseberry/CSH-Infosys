@@ -125,7 +125,7 @@ def getData():
     print(response)
 
 def registerSpaces():
-    count = raw_input('How many slots do you wants? ')
+    count = raw_input('How many slots do you want? ')
     response = infosys.registerSpaces(count)
     print(response)
 
