@@ -1,3 +1,0 @@
-#!/bin/bash
-#simple script that displays a welcome message
-./infowrite -w "WELCOME" -t "TO CSH" -l 0
