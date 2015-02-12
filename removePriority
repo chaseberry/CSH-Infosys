@@ -1,7 +1,0 @@
-#!/bin/bash
-#Author: Josh McSavaney ( mcsaucy@csh.rit.edu )
-#This will remove a priority message in the event one is run.
-#For example, this undoes the running of cock, cockboat, and openhouse
-#Things may still a bit broken afterwards, but just update something
-#and things should spring back to life
-echo -e "\x00\x00\x00\x00\x00\x01Z00\x02A0\x04" > /dev/ttyUSB0
