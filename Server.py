@@ -371,7 +371,7 @@ def startUp(test):
         app.debug = True
         app.run()
     else:
-        app.run(host='0.0.0.0')
+        app.run(host='0.0.0.0', threaded=True)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='InfoSys server config')
