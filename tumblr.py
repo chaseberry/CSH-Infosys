@@ -19,11 +19,20 @@ def getPost(client, user):
     body = BeautifulSoup(post['posts'][0]['body'])
     return ' '.join(body.stripped_strings)
 
-def getPostWithLimit(client, user, line_limit = 80):
+def getPostWithLimit(fetcher, line_limit = 80):
     while True:
-        post = getPost(client, user)
+        post = fetcher()
         if len(post) <= line_limit:
             return post
+
+def getPostWithoutUnicode(fetcher):
+    while True:
+        post = fetcher()
+        try:
+            post.decode('ascii')
+        except UnicodeEncodeError:
+            continue
+        return post
 
 def post(text):
     global infosysKey
@@ -45,5 +54,6 @@ if __name__ == '__main__':
         creds['oauthSecret']
     )
 
-    post(getPostWithLimit(client, args.user))
-    
+    post(getPostWithoutUnicode(
+        lambda: getPostWithLimit(
+            lambda: getPost(client, args.user))))
