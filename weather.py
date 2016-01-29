@@ -4,7 +4,7 @@ import argparse
 
 cityId = '5137454' #Scottsville weather
 
-url = 'http://api.openweathermap.org/data/2.5/weather?id=' + cityId
+url = 'http://api.openweathermap.org/data/2.5/weather?appid=d98b4c54c7df3a1503806c43c7c2e50f&id=' + cityId
 
 infosysKey = 'fe3e9d5c-8068-42d5-835c-5f01eaf0271a' #this key requires 6 spaces 
 
